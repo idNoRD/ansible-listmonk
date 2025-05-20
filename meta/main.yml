@@ -3,6 +3,7 @@ galaxy_info:
   author: idNoRD
   description: Ansible role to install and configure Listmonk on RHEL/CentOS.
   company: ""
+  role_name: "listmonk"
 
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
