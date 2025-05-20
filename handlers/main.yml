@@ -1,3 +1,17 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # handlers file for listmonk
+---
+- name: "Bootstrapped"
+  ansible.builtin.include_tasks: bootstrapped.yml
+  listen: bootstrapped
+- name: "Restart {{ listmonk.service_name }}"
+  ansible.builtin.include_tasks:
+    file: "restart.yml"
+  listen: "restart listmonk"
+- name: "Display deprecation warning"
+  ansible.builtin.fail:
+    msg: "Deprecation warning: you are using the deprecated variable '{{ deprecated_variable | d('NotSet') }}', check docs on how to upgrade."
+  failed_when: false
+  changed_when: true
+  listen: "print deprecation warning"
