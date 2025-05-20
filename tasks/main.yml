@@ -1,7 +1,28 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # tasks file for listmonk
-  - name: Warn if OS is not explicitly supported yet
-    ansible.builtin.fail:
-      msg: "Warning: {{ ansible_distribution }} {{ ansible_distribution_version }} is not officially supported yet by this role."
-    when: ansible_distribution not in ['Amazon', 'Fedora', 'RedHat', 'CentOS', 'Rocky', 'AlmaLinux']
+  - name: Check prerequisites
+    ansible.builtin.include_tasks: prereqs.yml
+    tags:
+      - prereqs
+      - always
+
+  - name: Check for deprecations
+    ansible.builtin.include_tasks: deprecations.yml
+    tags:
+      - always
+
+  - name: Distro specific tasks
+    ansible.builtin.include_tasks: "{{ ansible_os_family | lower }}.yml"
+    tags:
+      - unbound
+
+  - name: Include install tasks
+    ansible.builtin.include_tasks: install.yml
+    tags:
+      - install
+
+  - name: Include systemd tasks
+    ansible.builtin.include_tasks: systemd.yml
+    tags:
+      - systemd

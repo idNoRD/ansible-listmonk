@@ -1,0 +1,97 @@
+---
+- name: Validate parameters
+  ansible.builtin.assert:
+    that:
+      - listmonk.home is defined
+      - listmonk_service_user is defined
+      - listmonk_dest is defined
+      - listmonk_archive is defined
+      - listmonk_download_url is defined
+      - listmonk_version is defined
+      - local_path is defined
+    quiet: true
+
+- name: Check for an existing deployment
+  become: true
+  ansible.builtin.stat:
+    path: "{{ listmonk.home }}"
+  register: existing_deploy
+
+- name: "Create {{ listmonk.service_name }} service user/group"
+  become: true
+  ansible.builtin.user:
+    name: "{{ listmonk.service_user }}"
+    home: /opt/listmonk
+    system: true
+    create_home: false
+
+- name: "Create {{ listmonk.service_name }} install location"
+  become: true
+  ansible.builtin.file:
+    dest: "{{ listmonk_dest }}"
+    state: directory
+    owner: "{{ listmonk.service_user }}"
+    group: "{{ listmonk.service_group }}"
+    mode: '0750'
+
+- name: Create directory for ansible custom facts
+  become: true
+  ansible.builtin.file:
+    state: directory
+    recurse: true
+    path: /etc/ansible/facts.d
+
+## check remote archive
+- name: Set download archive path
+  ansible.builtin.set_fact:
+    archive: "{{ listmonk_dest }}/{{ listmonk.bundle }}"
+
+- name: Check download archive path
+  become: true
+  ansible.builtin.stat:
+    path: "{{ archive }}"
+  register: archive_path
+
+## download to controller
+- name: Download listmonk archive
+  ansible.builtin.get_url: # noqa risky-file-permissions delegated, uses controller host user
+    url: "{{ listmonk_download_url }}"
+    dest: "{{ local_path.stat.path }}/{{ listmonk.bundle }}"
+    mode: '0640'
+  delegate_to: localhost
+  become: false
+  run_once: true
+  when:
+    - archive_path is defined
+    - archive_path.stat is defined
+    - not archive_path.stat.exists
+    - not listmonk.offline_install
+
+- name: Check downloaded archive
+  ansible.builtin.stat:
+    path: "{{ local_path.stat.path }}/{{ listmonk.bundle }}"
+  register: local_archive_path
+  delegate_to: localhost
+  become: false
+  run_once: true
+
+## copy and unpack
+- name: Copy archive to target nodes
+  ansible.builtin.copy:
+    src: "{{ local_path.stat.path }}/{{ listmonk.bundle }}"
+    dest: "{{ archive }}"
+    owner: "{{ listmonk.service_user }}"
+    group: "{{ listmonk.service_group }}"
+    mode: '0640'
+  register: new_version_downloaded
+  when:
+    - not archive_path.stat.exists
+    - local_archive_path.stat is defined
+    - local_archive_path.stat.exists
+  become: true
+
+- name: "Check target directory: {{ listmonk.home }}/bin/"
+  ansible.builtin.stat:
+    path: "{{ listmonk.home }}/bin/"
+  register: path_to_workdir
+  become: true

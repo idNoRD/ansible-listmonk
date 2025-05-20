@@ -1,3 +1,11 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # vars file for listmonk
+listmonk: # noqa var-naming this is an internal dict of interpolated values
+  home: "{{ listmonk_home }}"
+  config_dir: "{{ listmonk_config_dir }}"
+  bundle: "{{ listmonk_archive }}"
+  service_name: "listmonk"
+  service_user: "{{ listmonk_service_user }}"
+  service_group: "{{ listmonk_service_group }}"
+  offline_install: "{{ listmonk_offline_install }}"

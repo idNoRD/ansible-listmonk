@@ -1,3 +1,50 @@
 #SPDX-License-Identifier: MIT-0
 ---
 # defaults file for listmonk
+
+### Configuration specific to listmonk
+listmonk_version: "v5.0.0"
+listmonk_archive: "listmonk_5.0.0_linux_amd64.tar.gz"
+listmonk_download_url: "https://github.com/knadh/listmonk/releases/download/{{ listmonk_version }}/{{ listmonk_archive }}"
+listmonk_installdir: "{{ listmonk_dest }}/listmonk-{{ listmonk_version }}"
+
+# whether to install from local archive
+listmonk_offline_install: false
+
+### Install location and service settings
+listmonk_dest: /opt/listmonk
+listmonk_home: "{{ listmonk_installdir }}"
+listmonk_config_dir: "{{ listmonk_home }}/conf"
+listmonk_download_path: "{{ lookup('env', 'PWD') }}"
+listmonk_service_user: listmonk
+listmonk_service_group: listmonk
+listmonk_service_restart_always: false
+listmonk_service_restart_on_failure: false
+listmonk_service_restartsec: "10s"
+listmonk_systemd_wait_for_port: false
+listmonk_systemd_wait_for_port_number: "{{ listmonk_https_port }}"
+listmonk_systemd_wait_for_log: false
+listmonk_systemd_wait_for_timeout: 60
+listmonk_systemd_wait_for_delay: 10
+
+listmonk_configure_firewalld: false
+listmonk_start_dev: false # TODO remove
+
+listmonk_http_enabled: true
+listmonk_http_port: 9000
+listmonk_https_port: 9001
+
+# Default values taken from https://listmonk.app/docs/installation/
+
+listmonk_config_address: "0.0.0.0:{{ listmonk_http_port }}"
+listmonk_config_admin_username: listmonk
+listmonk_config_admin_password: listmonk
+listmonk_config_db_host: localhost
+listmonk_config_db_port: 5432
+listmonk_config_db_user: listmonk
+listmonk_config_db_password: listmonk
+listmonk_config_db_database: listmonk
+listmonk_config_db_ssl_mode: disable
+listmonk_config_db_max_open: 25
+listmonk_config_db_max_idle: 25
+listmonk_config_db_max_lifetime: 300s

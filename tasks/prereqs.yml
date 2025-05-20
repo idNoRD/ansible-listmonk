@@ -1,0 +1,73 @@
+---
+- name: Validate OS family
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family in ["RedHat"]
+    quiet: true
+    fail_msg: "Can only install on RedHat OS family; found {{ ansible_os_family }}"
+    success_msg: "Installing on {{ ansible_os_family }}"
+
+- name: Load OS specific variables
+  ansible.builtin.include_vars: "vars/{{ ansible_os_family | lower }}.yml"
+  tags:
+    - always
+
+- name: Ensure required packages are installed
+  ansible.builtin.include_tasks: fastpackages.yml
+  vars:
+    packages_list: "{{ listmonk_prereq_package_list }}"
+
+- name: Check local download archive path
+  ansible.builtin.stat:
+    path: "{{ listmonk_download_path }}"
+  register: local_path
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+- name: Validate local download path
+  ansible.builtin.assert:
+    that:
+      - local_path.stat.exists
+      - local_path.stat.readable
+      - listmonk_offline_install or local_path.stat.writeable
+    quiet: true
+    fail_msg: "Defined controller path for downloading resources is incorrect or unreadable: {{ listmonk_download_path }}"
+    success_msg: "Will download resource to controller path: {{ listmonk_download_path }}"
+  delegate_to: localhost
+  run_once: true
+
+- name: Check downloaded archive if offline
+  ansible.builtin.stat:
+    path: "{{ local_path.stat.path }}/{{ listmonk.bundle }}"
+  when: listmonk_offline_install
+  register: local_archive_path_check
+  delegate_to: localhost
+  run_once: true
+
+- name: Validate local downloaded archive if offline
+  ansible.builtin.assert:
+    that:
+      - local_archive_path_check.stat.exists
+      - local_archive_path_check.stat.readable
+    quiet: true
+    fail_msg: "Configured for offline install but install archive not found at: {{ local_path.stat.path }}/{{ listmonk.bundle }}"
+    success_msg: "Will install offline with expected archive: {{ local_path.stat.path }}/{{ listmonk.bundle }}"
+  when: listmonk_offline_install
+  delegate_to: localhost
+  run_once: true
+
+- name: Validate admin console password
+  ansible.builtin.assert:
+    that:
+      - listmonk_config_admin_password | length > 7
+    quiet: true
+    fail_msg: "The console administrator password is empty or invalid. Please set the listmonk_config_admin_password to a 8+ char long string"
+    success_msg: "{{ 'Console administrator password OK' }}"
+- name: Validate db password
+  ansible.builtin.assert:
+    that:
+      - listmonk_config_db_password | length > 7
+    quiet: true
+    fail_msg: "The db password is empty or invalid. Please set the listmonk_config_db_password to a 8+ char long string"
+    success_msg: "{{ 'DB password OK' }}"

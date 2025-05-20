@@ -1,0 +1,33 @@
+{{ ansible_managed | comment }}
+  [Unit]
+  Description=Listmonk Server
+  After=network.target
+  
+  [Service]
+  EnvironmentFile=-{{ listmonk_sysconf_file }}
+  {% if listmonk_start_dev %}
+  ExecStart={{ listmonk.home }}/bin/listmonk --config {{ listmonk.config_dir }}/%i.toml $SYSTEMD_LISTMONK_ARGS
+  {% else %}
+  ExecStart={{ listmonk.home }}/bin/listmonk --config {{ listmonk.config_dir }}/%i.toml $SYSTEMD_LISTMONK_ARGS
+  {% endif %}
+  User={{ listmonk.service_user }}
+  Group={{ listmonk.service_group }}
+  SuccessExitStatus=0 143
+  {% if listmonk_service_restart_always %}
+  Restart=always
+  {% elif listmonk_service_restart_on_failure %}
+  Restart=on-failure
+  {% endif %}
+  RestartSec={{ listmonk_service_restartsec }}
+  {% if listmonk_http_port | int < 1024 or listmonk_https_port | int < 1024 %}
+  AmbientCapabilities=CAP_NET_BIND_SERVICE
+  {% endif %}
+  {% if listmonk_systemd_wait_for_port %}
+  ExecStartPost=/usr/bin/timeout {{ listmonk_systemd_wait_for_timeout }} sh -c 'while ! ss -H -t -l -n sport = :{{ listmonk_systemd_wait_for_port_number }} | grep -q "^LISTEN.*:{{ listmonk_systemd_wait_for_port_number }}"; do sleep 1; done && /bin/sleep {{ listmonk_systemd_wait_for_delay }}'
+  {% endif %}
+  {% if listmonk_systemd_wait_for_log %}
+  ExecStartPost=/usr/bin/timeout {{ listmonk_systemd_wait_for_timeout }} sh -c 'cat {{ listmonk.log.file }} | sed "/Profile.*activated/ q" && /bin/sleep {{ listmonk_systemd_wait_for_delay }}'
+  {% endif %}
+  
+  [Install]
+  WantedBy=multi-user.target

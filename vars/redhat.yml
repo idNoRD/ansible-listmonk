@@ -1,0 +1,4 @@
+---
+listmonk_prereq_package_list:
+  - unzip
+listmonk_sysconf_file: /etc/sysconfig/listmonk
