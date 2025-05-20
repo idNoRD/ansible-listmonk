@@ -29,6 +29,7 @@ listmonk_systemd_wait_for_delay: 10
 
 listmonk_configure_firewalld: false
 listmonk_start_dev: false # TODO remove
+listmonk_additional_env_vars: []
 
 listmonk_http_enabled: true
 listmonk_http_port: 9000
