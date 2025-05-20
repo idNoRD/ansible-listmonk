@@ -13,7 +13,7 @@
 # Ansible Role: Listmonk
 
 Ansible role to install and configure [Listmonk](https://listmonk.app)  
-This role supports only Amazon Linux 2023, Fedora 37/38, or RHEL 8/9.
+This role is primarily intended for Amazon Linux 2023, but it should work on Fedora 37/38, RHEL/CentOS 8/9, Rocky Linux, and AlmaLinux, though testing on these platforms has not been done.
 
 ---
 
@@ -21,9 +21,9 @@ This role supports only Amazon Linux 2023, Fedora 37/38, or RHEL 8/9.
 
 ### ✅ Completed
 - [x] Init empty role
+- [x] Add an OS check
 
 ### 🛠️ In Progress / Planned
-- [ ] Add an OS check
 - [ ] Create system group (`listmonk`)
 - [ ] Create dedicated user (`listmonk`, non-login)
 - [ ] Download latest Listmonk release binary from GitHub
