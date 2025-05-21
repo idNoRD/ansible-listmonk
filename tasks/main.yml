@@ -39,13 +39,13 @@
 
   - name: Wait for PostgreSQL to be available
     ansible.builtin.wait_for:
-      host: {{ listmonk_config_db_host }}
-      port: {{ listmonk_config_db_port }}
+      host: "{{ listmonk_config_db_host }}"
+      port: "{{ listmonk_config_db_port }}"
       state: started
       timeout: 60
       delay: 5
     become: true
-    failed_when: result.failed  # Only fail when the result indicates a failure
+    failed_when: result.failed
     register: result
 
   - name: Custom message if PostgreSQL is unavailable
