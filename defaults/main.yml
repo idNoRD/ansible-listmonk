@@ -38,14 +38,14 @@ listmonk_https_port: 9001
 listmonk_config_enabled: true
 listmonk_db_is_on_the_same_host: true
 listmonk_health_url: >-
-  {{ (listmonk_http_enabled | bool) | ternary('http://', 'https://') ~ listmonk_config_address ~ '/api/health' }}
+  {{ (listmonk_http_enabled | bool) | ternary('http://', 'https://') ~ 'localhost:' ~ listmonk_http_port ~ '/api/health' }}
 listmonk_restart_health_check: true
 listmonk_restart_health_check_delay: 5
 listmonk_restart_health_check_retries: 3
 
 # Default values taken from https://listmonk.app/docs/installation/
 
-listmonk_config_address: "localhost:{{ listmonk_http_port }}"
+listmonk_config_address: "0.0.0.0:{{ listmonk_http_port }}"
 listmonk_config_admin_username: listmonk
 listmonk_config_admin_password: listmonk
 listmonk_config_db_host: localhost
