@@ -39,10 +39,9 @@
 
   # TODO maybe remove --idempotent to recreate db completely
   - name: Force install of database scheme once
-    expect:
-      command: "{{ listmonk.home }}/bin/listmonk --config {{ listmonk.config_dir }}/config.toml --install --idempotent --yes"
+    command: "{{ listmonk.home }}/bin/listmonk --config {{ listmonk.config_dir }}/config.toml --install --idempotent --yes"
     when: not listmonk_already_bootstrapped
-    ignore_errors: no # TODO check if we have to ignore_errors
+    #ignore_errors: yes # TODO check if we have to ignore_errors
 
   - name: Flush pending handlers
     ansible.builtin.meta: flush_handlers
