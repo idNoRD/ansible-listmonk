@@ -60,9 +60,9 @@
 - name: Validate admin console password
   ansible.builtin.assert:
     that:
-      - listmonk_config_admin_password | length > 7
+      - listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD | length > 7
     quiet: true
-    fail_msg: "The console administrator password is empty or invalid. Please set the listmonk_config_admin_password to a 8+ char long string"
+    fail_msg: "The console administrator password is empty or invalid. Please set the listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD to a 8+ char long string"
     success_msg: "{{ 'Console administrator password OK' }}"
 - name: Validate db password
   ansible.builtin.assert:

@@ -1,26 +1,24 @@
 # Ansible Role: Listmonk
 
 Ansible role to install and configure [Listmonk](https://listmonk.app)  
-This role is primarily intended for Amazon Linux 2023, but it should work on Fedora 37/38, RHEL/CentOS 8/9, Rocky Linux, and AlmaLinux, though testing on these platforms has not been done.
+This role is primarily intended for Amazon Linux 2023, but it should also work on Fedora, RHEL distributions such as CentOS, Rocky Linux, and AlmaLinux, though testing on these platforms has not been done.
 
 ---
 
 ## 📍 ROADMAP: Development Plan
 
 ### ✅ Completed
-- [x] Init empty role
-- [x] Add an OS check
-- [x] Create system group (`listmonk`)
-- [x] Create dedicated user (`listmonk`, non-login)
-- [x] Download latest Listmonk release binary from GitHub
+- [x] Add RedHat os_family OS check
+- [x] Create dedicated system user/group (`listmonk:listmonk`)
+- [x] Download latest Listmonk release archive
 - [x] Extract and install Listmonk binary to `/opt/listmonk/bin`
-- [x] Create and configure `listmonk.toml` via Ansible template
-- [x] Create systemd service unit for Listmonk
-- [x] Start and enable the Listmonk systemd service
-- [x] Add role variables (e.g. port, paths, log level)
-- [x] listmonk can run by connecting to existing PostgreSQL running on the same host (Postgres externally installed)
+- [x] Create and configure `config.toml` via Ansible template
+- [x] Create, start and enable `listmonk.service` systemd service for Listmonk
+- [x] Add role variables (see `defaults/main.yml`)
+- [x] Listmonk works with a PostgreSQL database already installed on the same machine. `Note: This Ansible role does not install or manage PostgreSQL.`
 - [x] Add basic health check and service status validation
-- [x] Publish role on Ansible Galaxy
+- [x] Publish [role on Ansible Galaxy](https://galaxy.ansible.com/ui/standalone/roles/idNoRD/listmonk)
+- [x] Admin credentials are not stored in the Listmonk config file. They are provided as environment variables only during the initial bootstrap (one-time setup).
 ### 🛠️ In Progress / Planned
 - [ ] Configure data and log directories
 - [ ] Optional: Set up NGINX as a reverse proxy (or expose option)
@@ -39,25 +37,13 @@ Feel free to open a PR or issue if you'd like to contribute or suggest improveme
 
 The following are a set of key variables used by the role:
 
-| Variable                | Description                                                                           | Default value                       |
-|------------------------|---------------------------------------------------------------------------------------|-------------------------------------|
-| `listmonk_version`           | Listmonk version (from [GitHub Releases](https://github.com/knadh/listmonk/releases)) | `v5.0.0`  |
-| `listmonk_archive`           | Listmonk archive (from [GitHub Releases](https://github.com/knadh/listmonk/releases)) | `listmonk_5.0.0_linux_amd64.tar.gz` |
-| `listmonk_config_admin_password` | Password for the Listmonk admin user 8+ chars                                         | `listmonk`                          |
-| `listmonk_config_db_password`    | Password for the PostgreSQL database                                                  | `listmonk`                          |
-
-The following variables are _optional_:
-
-| Variable | Description | Default |
-|:---------|:------------|:---------|
-|`listmonk_service_user`| posix account username | `listmonk` |
-|`listmonk_service_group`| posix account group | `listmonk` |
-|`listmonk_service_restart_always`| systemd restart always behavior activation | `False` |
-|`listmonk_service_restart_on_failure`| systemd restart on-failure behavior activation | `False` |
-|`listmonk_service_startlimitintervalsec`| systemd StartLimitIntervalSec | `300` |
-|`listmonk_service_startlimitburst`| systemd StartLimitBurst | `5` |
-|`listmonk_service_restartsec`| systemd RestartSec | `10s` |
-|`listmonk_service_pidfile`| pid file path for service | `/run/listmonk/listmonk.pid` |
+| Variable                                     | Description                                                                  | Default value          |
+|----------------------------------------------|------------------------------------------------------------------------------|------------------------|
+| `listmonk_version`                           | Listmonk version (from [GitHub Releases](https://github.com/knadh/listmonk/releases)) | `v5.0.0`               |
+| `listmonk_archive`                           | Listmonk archive (from [GitHub Releases](https://github.com/knadh/listmonk/releases)) | `listmonk_5.0.0_linux_amd64.tar.gz` |
+| `listmonk_bootstrap_LISTMONK_ADMIN_USER`     | Username for the Listmonk admin user                                         | `listmonk`             |
+| `listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD` | Password for the Listmonk admin user 8+ chars                                | `changeit`             |
+| `listmonk_config_db_password`                | Password for the PostgreSQL database                                         | `listmonk`             |
 
 > Other configuration variables can be found in [`defaults/main.yml`](defaults/main.yml).
 
@@ -74,12 +60,17 @@ This role assumes the following are already installed or managed externally:
 ---
 
 ## Example Playbook
-
+```text
+ansible-galaxy role install idNoRD.listmonk
+```
 ```yaml
 ---
 - hosts: listmonk_servers
   vars:
-    listmonk_config_admin_password: "listmonk"
+    listmonk_version: "v5.0.0"
+    listmonk_archive: "listmonk_5.0.0_linux_amd64.tar.gz"
+    listmonk_bootstrap_LISTMONK_ADMIN_USER: "listmonk"
+    listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD: "listmonk"
     listmonk_config_db_password: "listmonk"
   roles:
     - idNoRD.listmonk
