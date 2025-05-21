@@ -76,8 +76,12 @@
   ansible.builtin.assert:
     that:
       - item.key is defined and item.key | length > 0
+      - item.key | lower not match(".*(pass|secret|token|key|cred).*")
       - item.value is defined and item.value | length > 0
     quiet: true
-    fail_msg: "Additional env variable definition is incorrect: `key` and `value` are mandatory."
+    fail_msg: >-
+      Additional env variable definition is incorrect: `key` and `value` are mandatory.
+      additional_env_vars is not secure
+      and it must not have sensitive data like 'pass', 'secret', 'token', 'key', or 'cred'.
   no_log: true
   loop: "{{ listmonk_additional_env_vars }}"

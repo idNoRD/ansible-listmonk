@@ -1,0 +1,10 @@
+---
+- name: Copy the configuration file to the config directory
+  template:
+    src: config.toml.j2
+    dest: "{{ listmonk.config_dir }}/config.toml"
+    owner: "{{ listmonk.service_user }}"
+    group: "{{ listmonk.service_group }}"
+    mode: '0400'
+  become: true
+  notify: restart listmonk

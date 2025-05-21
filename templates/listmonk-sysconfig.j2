@@ -1,11 +1,12 @@
 {{ ansible_managed | comment }}
-  {% if not ansible_local.listmonk.general.bootstrapped | default(false) | bool %}
-  #LISTMONK_admin__password={{ listmonk_config_admin_password }}
-  {% else %}
-  {{ listmonk.bootstrap_mnemonic }}
-  {% endif %}
+{% if not ansible_local.listmonk.general.bootstrapped | default(false) | bool %}
+#LISTMONK_ADMIN_USER={{ listmonk_config_admin_username }}
+#LISTMONK_ADMIN_PASSWORD={{ listmonk_config_admin_password }}
+{% else %}
+{{ listmonk.bootstrap_mnemonic }}
+{% endif %}
 
-  # Custom ENV variables
-  {% for env in listmonk_additional_env_vars %}
-  {{ env.key }}={{ env.value }}
-  {% endfor %}
+# Custom ENV variables
+{% for env in listmonk_additional_env_vars %}
+{{ env.key }}={{ env.value }}
+{% endfor %}

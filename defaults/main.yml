@@ -21,6 +21,7 @@ listmonk_service_group: listmonk
 listmonk_service_restart_always: false
 listmonk_service_restart_on_failure: false
 listmonk_service_restartsec: "10s"
+listmonk_service_exec_args: ""
 listmonk_systemd_wait_for_port: false
 listmonk_systemd_wait_for_port_number: "{{ listmonk_https_port }}"
 listmonk_systemd_wait_for_log: false
@@ -34,6 +35,12 @@ listmonk_additional_env_vars: []
 listmonk_http_enabled: true
 listmonk_http_port: 9000
 listmonk_https_port: 9001
+listmonk_config_enabled: true
+listmonk_db_is_on_the_same_host: true
+listmonk_health_url: "{{ listmonk_config_address }}"
+listmonk_restart_health_check: true
+listmonk_restart_health_check_delay: 10
+listmonk_restart_health_check_retries: 25
 
 # Default values taken from https://listmonk.app/docs/installation/
 

@@ -1,0 +1,16 @@
+{{ ansible_managed | comment }}
+[app]
+address = "{{ listmonk_config_address }}"
+admin_username = "{{ listmonk_config_admin_username }}"
+admin_password = "{{ listmonk_config_admin_password }}"
+
+[db]
+host = "{{ listmonk_config_db_host }}"
+port = {{ listmonk_config_db_port }}
+user = "{{ listmonk_config_db_user }}"
+password = "{{ listmonk_config_db_password }}"
+database = "{{ listmonk_config_db_database }}"
+ssl_mode = "{{ listmonk_config_db_ssl_mode }}"
+max_open = {{ listmonk_config_db_max_open }}
+max_idle = {{ listmonk_config_db_max_idle }}
+max_lifetime = "{{ listmonk_config_db_max_lifetime }}"

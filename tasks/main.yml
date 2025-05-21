@@ -26,3 +26,44 @@
     ansible.builtin.include_tasks: systemd.yml
     tags:
       - systemd
+
+  - name: Include configuration file tasks
+    when: listmonk.config_enabled
+    ansible.builtin.include_tasks: config_store.yml
+    tags:
+      - install
+
+  - name: Check if Listmonk was bootstrapped using ansible_local fact
+    ansible.builtin.set_fact:
+      listmonk_already_bootstrapped: "{{ ansible_local.listmonk.general.bootstrapped | default(false) }}"
+
+  # TODO maybe remove --idempotent to recreate db completely
+  - name: Force install of database scheme once
+    expect:
+      command: "{{ listmonk.home }}/bin/listmonk --config {{ listmonk.config_dir }}/config.toml --install --idempotent --yes"
+    when: not listmonk_already_bootstrapped
+    ignore_errors: no # TODO check if we have to ignore_errors
+
+  - name: Flush pending handlers
+    ansible.builtin.meta: flush_handlers
+
+  - name: "Start and wait for listmonk service"
+    ansible.builtin.include_tasks: start.yml
+
+  - name: Check service status
+    ansible.builtin.systemd_service:
+      name: "{{ listmonk.service_name }}"
+    register: listmonk_service_status
+    changed_when: false
+
+  - name: "Notify to remove `listmonk_bootstrap_admin_user[_password]` env vars"
+    when:
+      - not ansible_local.listmonk.general.bootstrapped | default(false) | bool # it was not bootstrapped prior to the current role's execution
+      - listmonk_service_status.status.ActiveState == "active"                  # but it is now
+    ansible.builtin.assert: { that: true, quiet: true }
+    changed_when: true
+    notify:
+      - bootstrapped
+
+  - name: Flush pending handlers
+    ansible.builtin.meta: flush_handlers

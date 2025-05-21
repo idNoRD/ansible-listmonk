@@ -95,3 +95,25 @@
     path: "{{ listmonk.home }}/bin/"
   register: path_to_workdir
   become: true
+
+- name: "Extract listmonk archive on target" # noqa no-handler need to run this here
+  ansible.builtin.unarchive:
+    remote_src: true
+    src: "{{ archive }}"
+    dest: "{{ listmonk_dest }}"
+    creates: "{{ listmonk.home }}/bin/"
+    owner: "{{ listmonk.service_user }}"
+    group: "{{ listmonk.service_group }}"
+  become: true
+  when:
+    - (not path_to_workdir.stat.exists) or new_version_downloaded.changed
+  notify:
+    - restart listmonk
+
+- name: Inform decompression was not executed
+  ansible.builtin.debug:
+    msg: "{{ listmonk.home }} already exists and version unchanged, skipping decompression"
+  when:
+    - (not new_version_downloaded.changed) and path_to_workdir.stat.exists
+
+# TODO create folder here instead of creating it in listmonk.service.j2 ExecStartPre=/bin/sh -c 'mkdir -p "{{ listmonk.home }}/uploads"'
