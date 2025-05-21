@@ -38,7 +38,7 @@ listmonk_https_port: 9001
 listmonk_config_enabled: true
 listmonk_db_is_on_the_same_host: true
 listmonk_health_url: >-
-  {{ (listmonk_http_enabled | bool) | ternary('http://', 'https://') ~ 'localhost:' ~ listmonk_http_port ~ '/api/health' }}
+  {{ (listmonk_http_enabled | bool) | ternary('http://', 'https://') ~ 'localhost:' ~ listmonk_http_port }}
 listmonk_restart_health_check: true
 listmonk_restart_health_check_delay: 5
 listmonk_restart_health_check_retries: 3
