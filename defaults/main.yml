@@ -39,8 +39,8 @@ listmonk_config_enabled: true
 listmonk_db_is_on_the_same_host: true
 listmonk_health_url: "{{ listmonk_config_address }}"
 listmonk_restart_health_check: true
-listmonk_restart_health_check_delay: 10
-listmonk_restart_health_check_retries: 25
+listmonk_restart_health_check_delay: 5
+listmonk_restart_health_check_retries: 3
 
 # Default values taken from https://listmonk.app/docs/installation/
 
