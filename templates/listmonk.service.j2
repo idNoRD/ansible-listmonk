@@ -4,7 +4,7 @@ Description=Listmonk Server
 ConditionPathExists={{ listmonk.config_dir }}/config.toml
 # The PostgreSQL database may not be on the same host but if it
 # is listmonk should wait for it to start up.
-{ % if listmonk.db_is_on_the_same_host % }
+{% if listmonk.db_is_on_the_same_host %}
 Wants=network.target
 After=postgresql.service
 {% else %}

@@ -22,15 +22,13 @@ This role is primarily intended for Amazon Linux 2023, but it should work on Fed
 ### ✅ Completed
 - [x] Init empty role
 - [x] Add an OS check
-
+- [x] Create system group (`listmonk`)
+- [x] Create dedicated user (`listmonk`, non-login)
+- [x] Download latest Listmonk release binary from GitHub
+- [x] Extract and install Listmonk binary to `/opt/listmonk/bin`
+- [x] Create and configure `listmonk.toml` via Ansible template
+- [x] Create systemd service unit for Listmonk
 ### 🛠️ In Progress / Planned
-- [ ] Create system group (`listmonk`)
-- [ ] Create dedicated user (`listmonk`, non-login)
-- [ ] Download latest Listmonk release binary from GitHub
-- [ ] Extract and install Listmonk binary to `/opt/listmonk` or `/usr/local/bin`
-- [ ] Set proper file ownership and permissions
-- [ ] Create and configure `listmonk.toml` via Ansible template
-- [ ] Create systemd service unit for Listmonk
 - [ ] Configure data and log directories
 - [ ] Start and enable the Listmonk systemd service
 - [ ] Add role variables (e.g. port, paths, log level)
