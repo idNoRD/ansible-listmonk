@@ -45,14 +45,13 @@
       timeout: 60
       delay: 5
     become: true
-    failed_when: result.failed
     register: result
+    ignore_errors: yes # to continue and show error if it fails
 
   - name: Custom message if PostgreSQL is unavailable
     ansible.builtin.debug:
-      msg: "PostgreSQL is unavailable or not responding on {{ listmonk_config_db_host }}:{{ listmonk_config_db_port }}."
+      msg: "❌ PostgreSQL is unavailable or not responding on {{ listmonk_config_db_host }}:{{ listmonk_config_db_port }}."
     when: result.failed
-    become: false
 
   # TODO maybe remove --idempotent to recreate db completely
   - name: Force install of database scheme once
