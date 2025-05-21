@@ -6,13 +6,13 @@
 listmonk_version: "v5.0.0"
 listmonk_archive: "listmonk_5.0.0_linux_amd64.tar.gz"
 listmonk_download_url: "https://github.com/knadh/listmonk/releases/download/{{ listmonk_version }}/{{ listmonk_archive }}"
+listmonk_dest: /opt/listmonk
 listmonk_installdir: "{{ listmonk_dest }}/listmonk-{{ listmonk_version }}"
 
 # whether to install from local archive
 listmonk_offline_install: false
 
 ### Install location and service settings
-listmonk_dest: /opt/listmonk
 listmonk_home: "{{ listmonk_installdir }}"
 listmonk_config_dir: "{{ listmonk_home }}/conf"
 listmonk_download_path: "{{ lookup('env', 'PWD') }}"

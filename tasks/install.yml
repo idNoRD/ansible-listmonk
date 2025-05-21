@@ -90,23 +90,32 @@
     - local_archive_path.stat.exists
   become: true
 
-- name: "Check if listmonk binary already exists: {{ listmonk.home }}/bin/listmonk"
+- name: "Check target directory: {{ listmonk.home }}/bin/"
   ansible.builtin.stat:
-    path: "{{ listmonk.home }}/bin/listmonk"
-  register: path_to_binary
+    path: "{{ listmonk.home }}/bin/"
+  register: path_to_workdir
   become: true
+
+- name: Create missing subdirectory because archive doesn't include it
+  ansible.builtin.file:
+    path: "{{ listmonk.home }}/bin/"
+    state: directory
+    owner: "{{ listmonk.service_user }}"
+    group: "{{ listmonk.service_group }}"
+    mode: '0750'
 
 - name: "Extract listmonk archive on target" # noqa no-handler need to run this here
   ansible.builtin.unarchive:
     remote_src: true
     src: "{{ archive }}"
-    dest: "{{ listmonk_dest }}/bin"
+    dest: "{{ listmonk.home }}/bin/" # if archive has subdirectory use "{{ listmonk_dest }}"
     creates: "{{ listmonk.home }}/bin/listmonk"
     owner: "{{ listmonk.service_user }}"
     group: "{{ listmonk.service_group }}"
+    mode: '0750'
   become: true
   when:
-    - (not path_to_binary.stat.exists) or new_version_downloaded.changed
+    - (not path_to_workdir.stat.exists) or new_version_downloaded.changed
   notify:
     - restart listmonk
 
@@ -114,6 +123,6 @@
   ansible.builtin.debug:
     msg: "{{ listmonk.home }} already exists and version unchanged, skipping decompression"
   when:
-    - (not new_version_downloaded.changed) and path_to_binary.stat.exists
+    - (not new_version_downloaded.changed) and path_to_workdir.stat.exists
 
 # TODO create folder here instead of creating it in listmonk.service.j2 ExecStartPre=/bin/sh -c 'mkdir -p "{{ listmonk.home }}/uploads"'
