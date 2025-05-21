@@ -1,15 +1,3 @@
-> ⚠️ **Work in Progress**
->
-> This Ansible role is currently under active development and is **not yet production-ready**.
->
-> We're working on automating the installation and configuration of [Listmonk](https://listmonk.app) on RHEL/CentOS and Fedora-compatible systems like Amazon Linux 2023.
->
-> ✅ The role has been initialized and basic structure is in place.  
-> 🛠️ Key tasks such as downloading binaries, creating a systemd service, and templating configuration are planned (see [ROADMAP.md](./ROADMAP.md) for details).
->
-> Contributions, issues, and feedback are welcome as the role evolves!
-
-
 # Ansible Role: Listmonk
 
 Ansible role to install and configure [Listmonk](https://listmonk.app)  
