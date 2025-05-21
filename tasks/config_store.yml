@@ -5,7 +5,7 @@
     state: directory
     owner: "{{ listmonk.service_user }}"
     group: "{{ listmonk.service_group }}"
-    mode: '0400'
+    mode: '0500'
   become: true
 
 - name: "Copy the configuration file to the config directory"
