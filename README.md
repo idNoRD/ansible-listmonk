@@ -28,15 +28,15 @@ This role is primarily intended for Amazon Linux 2023, but it should work on Fed
 - [x] Extract and install Listmonk binary to `/opt/listmonk/bin`
 - [x] Create and configure `listmonk.toml` via Ansible template
 - [x] Create systemd service unit for Listmonk
+- [x] Start and enable the Listmonk systemd service
+- [x] Add role variables (e.g. port, paths, log level)
+- [x] listmonk can run by connecting to existing PostgreSQL running on the same host (Postgres externally installed)
+- [x] Add basic health check and service status validation
+- [x] Publish role on Ansible Galaxy
 ### 🛠️ In Progress / Planned
 - [ ] Configure data and log directories
-- [ ] Start and enable the Listmonk systemd service
-- [ ] Add role variables (e.g. port, paths, log level)
-- [ ] Optional: Configure PostgreSQL (external or integrated role)
 - [ ] Optional: Set up NGINX as a reverse proxy (or expose option)
-- [ ] Add basic health check and service status validation
 - [ ] Add Molecule tests for role verification
-- [ ] Publish role on Ansible Galaxy
 - [ ] Improve documentation with usage examples and variable reference
 
 ---
