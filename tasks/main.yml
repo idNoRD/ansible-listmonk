@@ -37,6 +37,23 @@
     ansible.builtin.set_fact:
       listmonk_already_bootstrapped: "{{ ansible_local.listmonk.general.bootstrapped | default(false) }}"
 
+  - name: Wait for PostgreSQL to be available
+    ansible.builtin.wait_for:
+      host: {{ listmonk_config_db_host }}
+      port: {{ listmonk_config_db_port }}
+      state: started
+      timeout: 60
+      delay: 5
+    become: true
+    failed_when: result.failed  # Only fail when the result indicates a failure
+    register: result
+
+  - name: Custom message if PostgreSQL is unavailable
+    ansible.builtin.debug:
+      msg: "PostgreSQL is unavailable or not responding on {{ listmonk_config_db_host }}:{{ listmonk_config_db_port }}."
+    when: result.failed
+    become: false
+
   # TODO maybe remove --idempotent to recreate db completely
   - name: Force install of database scheme once
     command: "{{ listmonk.home }}/bin/listmonk --config {{ listmonk.config_dir }}/config.toml --install --idempotent --yes"
