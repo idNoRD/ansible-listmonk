@@ -71,6 +71,9 @@ ansible-galaxy role install idNoRD.listmonk
     listmonk_archive: "listmonk_5.0.0_linux_amd64.tar.gz"
     listmonk_bootstrap_LISTMONK_ADMIN_USER: "listmonk"
     listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD: "listmonk"
+    listmonk_config_db_host: "localhost"
+    listmonk_config_db_database: "listmonk"
+    listmonk_config_db_user: "listmonk"
     listmonk_config_db_password: "listmonk"
   roles:
     - idNoRD.listmonk

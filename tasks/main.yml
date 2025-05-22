@@ -55,8 +55,8 @@
   - name: Force install of database scheme once
     command: "{{ listmonk.home }}/bin/listmonk --config {{ listmonk.config_dir }}/config.toml --install --idempotent --yes"
     environment:
-      LISTMONK_ADMIN_USER: "{{ listmonk_config_admin_username }}"
-      LISTMONK_ADMIN_PASSWORD: "{{ listmonk_config_admin_password }}"
+      LISTMONK_ADMIN_USER: "{{ listmonk_bootstrap_LISTMONK_ADMIN_USER }}"
+      LISTMONK_ADMIN_PASSWORD: "{{ listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD }}"
     when: not listmonk_already_bootstrapped
     no_log: true
 
@@ -72,7 +72,7 @@
     register: listmonk_service_status
     changed_when: false
 
-  - name: "Notify to remove `listmonk_bootstrap_admin_user[_password]` env vars"
+  - name: "Notify that setup was bootstrapped successfully"
     when:
       - not ansible_local.listmonk.general.bootstrapped | default(false) | bool # it was not bootstrapped prior to the current role's execution
       - listmonk_service_status.status.ActiveState == "active"                  # but it is now
