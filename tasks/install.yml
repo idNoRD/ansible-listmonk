@@ -124,5 +124,3 @@
     msg: "{{ listmonk.home }} already exists and version unchanged, skipping decompression"
   when:
     - (not new_version_downloaded.changed) and path_to_workdir.stat.exists
-
-# TODO create folder here instead of creating it in listmonk.service.j2 ExecStartPre=/bin/sh -c 'mkdir -p "{{ listmonk.home }}/uploads"'

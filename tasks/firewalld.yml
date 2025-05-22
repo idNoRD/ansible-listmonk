@@ -32,5 +32,5 @@
     immediate: true
   loop:
     - "{{ listmonk_https_port }}/tcp"
-  when: not listmonk_http_enabled | bool #TODO check if we need to comment
+  when: not listmonk_http_enabled | bool
 
