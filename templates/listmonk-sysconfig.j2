@@ -1,7 +1,7 @@
 {{ ansible_managed | comment }}
 {% if not ansible_local.listmonk.general.bootstrapped | default(false) | bool %}
-#LISTMONK_ADMIN_USER={{ listmonk_config_admin_username }}
-#LISTMONK_ADMIN_PASSWORD={{ listmonk_config_admin_password }}
+#LISTMONK_ADMIN_USER=...
+#LISTMONK_ADMIN_PASSWORD=...
 {% else %}
 {{ listmonk.bootstrap_mnemonic }}
 {% endif %}
