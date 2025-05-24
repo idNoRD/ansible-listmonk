@@ -1,1 +1,11 @@
 ---
+#- name: Check deprecation of listmonk_abc variable
+#  when:
+#    - listmonk_abc is defined
+#  delegate_to: localhost
+#  run_once: true
+#  changed_when: listmonk_show_deprecation_warnings
+#  ansible.builtin.set_fact:
+#    deprecated_variable: "listmonk_abc" # read in deprecation handler
+#  notify:
+#    - print deprecation warning

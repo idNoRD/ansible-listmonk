@@ -27,8 +27,8 @@
     tags:
       - systemd
 
-  - name: Include configuration file tasks
-    when: listmonk.config_enabled
+  - name: Include config.toml file tasks
+    when: listmonk.service_start_with_config
     ansible.builtin.include_tasks: config_store.yml
     tags:
       - install

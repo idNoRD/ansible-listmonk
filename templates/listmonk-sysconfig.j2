@@ -7,6 +7,6 @@
 {% endif %}
 
 # Custom ENV variables
-{% for env in listmonk_additional_env_vars %}
+{% for env in listmonk_service_additional_env_vars %}
 {{ env.key }}={{ env.value }}
 {% endfor %}

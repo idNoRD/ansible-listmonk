@@ -72,7 +72,7 @@
     fail_msg: "The db password is empty or invalid. Please set the listmonk_config_db_password to a 8+ char long string"
     success_msg: "{{ 'DB password OK' }}"
 
-- name: "Validate additional env variables"
+- name: "Validate additional env variables for service"
   ansible.builtin.assert:
     that:
       - item.key is defined and item.key | length > 0
@@ -84,4 +84,4 @@
       additional_env_vars is not secure
       and it must not have sensitive data like 'pass', 'secret', 'token', 'key', or 'cred'.
   no_log: true
-  loop: "{{ listmonk_additional_env_vars }}"
+  loop: "{{ listmonk_service_additional_env_vars }}"

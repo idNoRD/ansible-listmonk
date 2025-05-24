@@ -17,10 +17,10 @@ PermissionsStartOnly=true
 EnvironmentFile=-{{ listmonk_sysconf_file }}
 ExecStartPre=/bin/sh -c 'mkdir -p "{{ listmonk.home }}/uploads"'
 ExecStartPre={{ listmonk.home }}/bin/listmonk --config {{ listmonk.config_dir }}/config.toml --upgrade --yes
-{% if listmonk.config_enabled %}
-ExecStart={{ listmonk.home }}/bin/listmonk --config {{ listmonk.config_dir }}/config.toml {{ listmonk_service_exec_args }}
+{% if listmonk.service_start_with_config %}
+ExecStart={{ listmonk.home }}/bin/listmonk --config {{ listmonk.config_dir }}/config.toml {{ listmonk.service_start_args }}
 {% else %}
-ExecStart={{ listmonk_service_exec_args }}
+ExecStart={{ listmonk.service_start_args }}
 {% endif %}
 User={{ listmonk.service_user }}
 Group={{ listmonk.service_group }}

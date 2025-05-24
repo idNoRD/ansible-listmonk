@@ -6,46 +6,40 @@
 listmonk_version: "v5.0.0"
 listmonk_archive: "listmonk_5.0.0_linux_amd64.tar.gz"
 listmonk_download_url: "https://github.com/knadh/listmonk/releases/download/{{ listmonk_version }}/{{ listmonk_archive }}"
-listmonk_dest: /opt/listmonk
 listmonk_installdir: "{{ listmonk_dest }}/listmonk-{{ listmonk_version }}"
 
 # whether to install from local archive
 listmonk_offline_install: false
 
+listmonk_show_deprecation_warnings: true
+
 ### Install location and service settings
+listmonk_dest: /opt/listmonk
 listmonk_home: "{{ listmonk_installdir }}"
 listmonk_config_dir: "{{ listmonk_home }}/conf"
 listmonk_download_path: "{{ lookup('env', 'PWD') }}"
+listmonk_service_start_with_config: true
+listmonk_service_start_args: ""
 listmonk_service_user: listmonk
 listmonk_service_group: listmonk
 listmonk_service_restart_always: false
 listmonk_service_restart_on_failure: false
 listmonk_service_restartsec: "10s"
-listmonk_service_exec_args: ""
-listmonk_systemd_wait_for_port: false
-listmonk_systemd_wait_for_port_number: "{{ listmonk_https_port }}"
-listmonk_systemd_wait_for_log: false
-listmonk_systemd_wait_for_timeout: 60
-listmonk_systemd_wait_for_delay: 10
+listmonk_service_additional_env_vars: []
 
 listmonk_configure_firewalld: false
-listmonk_additional_env_vars: []
 
+### administrator console password
+# Admin credentials are not stored in the Listmonk config file.
+# They are provided as environment variables only during the initial bootstrap (one-time install).
+listmonk_bootstrap_LISTMONK_ADMIN_USER: listmonk
+listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD: changeit
+
+### Configuration settings
 listmonk_http_enabled: true
 listmonk_http_port: 9000
 listmonk_https_port: 9001
-listmonk_config_enabled: true
 listmonk_db_is_on_the_same_host: true
-listmonk_health_url: >-
-  {{ (listmonk_http_enabled | bool) | ternary('http://', 'https://') ~ 'localhost:' ~ listmonk_http_port }}
-listmonk_restart_health_check: true
-listmonk_restart_health_check_delay: 5
-listmonk_restart_health_check_retries: 3
-
-# Admin credentials are not stored in the Listmonk config file.
-# They are provided as environment variables only during the initial bootstrap (one-time setup).
-listmonk_bootstrap_LISTMONK_ADMIN_USER: listmonk
-listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD: changeit
 
 # Default values taken from https://listmonk.app/docs/installation/
 listmonk_config_address: "0.0.0.0:{{ listmonk_http_port }}"
@@ -58,3 +52,23 @@ listmonk_config_db_ssl_mode: disable
 listmonk_config_db_max_open: 25
 listmonk_config_db_max_idle: 25
 listmonk_config_db_max_lifetime: 300s
+
+### TLS/HTTPS configuration
+#### Please use reverse-proxy like nginx for tls
+
+### Enable if db is on external host and service needs
+listmonk_systemd_wait_for_port: "{{ false if listmonk_db_is_on_the_same_host else true }}"
+listmonk_systemd_wait_for_port_number: "{{ listmonk_https_port }}"
+listmonk_systemd_wait_for_log: false
+listmonk_systemd_wait_for_timeout: 60
+listmonk_systemd_wait_for_delay: 10
+
+### logging configuration
+#### We don't store logs in a separate file. The output is captured by systemd and logged via journald.
+
+# restart until service become healthy settings
+listmonk_health_url: >-
+  {{ (listmonk_http_enabled | bool) | ternary('http://', 'https://') ~ 'localhost:' ~ listmonk_http_port }}
+listmonk_restart_health_check: true
+listmonk_restart_health_check_delay: 5
+listmonk_restart_health_check_retries: 3
