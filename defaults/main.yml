@@ -34,6 +34,7 @@ listmonk_configure_firewalld: false
 # They are provided as environment variables only during the initial bootstrap (one-time install).
 listmonk_bootstrap_LISTMONK_ADMIN_USER: listmonk
 listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD: changeit
+listmonk_bootstrap_LISTMONK_ADMIN_API_USER: ansibleApiUser
 
 ### Configuration settings
 listmonk_http_enabled: true
@@ -65,10 +66,18 @@ listmonk_systemd_wait_for_delay: 10
 
 ### logging configuration
 #### We don't store logs in a separate file. The output is captured by systemd and logged via journald.
-
-# restart until service become healthy settings
-listmonk_health_url: >-
+listmonk_root_url: >-
   {{ (listmonk_http_enabled | bool) | ternary('http://', 'https://') ~ 'localhost:' ~ listmonk_http_port }}
+# restart until service become healthy settings
+listmonk_health_url: {{ listmonk_root_url }}
 listmonk_restart_health_check: true
 listmonk_restart_health_check_delay: 5
 listmonk_restart_health_check_retries: 3
+
+# Update Settings using Listmonk API
+listmonk_api_url: {{ listmonk_root_url }}/api
+#listmonk_api_token: "" # optional variable to use api of existing listmonk
+listmonk_api_settings_payload: |
+  {
+    "app.site_name": "Mailing list (managed by Ansible role)"
+  }

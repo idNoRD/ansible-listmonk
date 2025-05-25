@@ -57,20 +57,56 @@
   delegate_to: localhost
   run_once: true
 
+- name: Validate admin console user name
+  ansible.builtin.assert:
+    that:
+      - listmonk_bootstrap_LISTMONK_ADMIN_USER is defined
+      - listmonk_bootstrap_LISTMONK_ADMIN_USER | length > 3
+    quiet: true
+    fail_msg: "The console administrator username is empty or invalid. Please set the listmonk_bootstrap_LISTMONK_ADMIN_USER to a 4+ char long string"
+    success_msg: "Console administrator username OK"
+
 - name: Validate admin console password
   ansible.builtin.assert:
     that:
+      - listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD is defined
       - listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD | length > 7
     quiet: true
-    fail_msg: "The console administrator password is empty or invalid. Please set the listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD to a 8+ char long string"
-    success_msg: "{{ 'Console administrator password OK' }}"
+    fail_msg: "The console administrator password is empty or invalid. Please set the listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD to an 8+ char long string"
+    success_msg: "Console administrator password OK"
+
 - name: Validate db password
   ansible.builtin.assert:
     that:
+      - listmonk_config_db_password is defined
       - listmonk_config_db_password | length > 7
     quiet: true
-    fail_msg: "The db password is empty or invalid. Please set the listmonk_config_db_password to a 8+ char long string"
-    success_msg: "{{ 'DB password OK' }}"
+    fail_msg: "The db password is empty or invalid. Please set the listmonk_config_db_password to an 8+ char long string"
+    success_msg: "DB password OK"
+
+- name: Validate the name for Admin API User
+  ansible.builtin.assert:
+    that:
+      - listmonk_bootstrap_LISTMONK_ADMIN_API_USER is defined
+      - listmonk_bootstrap_LISTMONK_ADMIN_API_USER | length > 3
+    quiet: true
+    fail_msg: "The LISTMONK_ADMIN_API_USER is empty or invalid. Please set the listmonk_bootstrap_LISTMONK_ADMIN_API_USER to a 4+ char long string"
+    success_msg: "Admin API User name OK"
+
+- name: Validate that all sensitive strings are not the same
+  ansible.builtin.assert:
+    that:
+      - listmonk_bootstrap_LISTMONK_ADMIN_USER != listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD
+      - listmonk_bootstrap_LISTMONK_ADMIN_USER != listmonk_config_db_password
+      - listmonk_bootstrap_LISTMONK_ADMIN_USER != listmonk_bootstrap_LISTMONK_ADMIN_API_USER
+      - listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD != listmonk_config_db_password
+      - listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD != listmonk_bootstrap_LISTMONK_ADMIN_API_USER
+      - listmonk_config_db_password != listmonk_bootstrap_LISTMONK_ADMIN_API_USER
+    fail_msg: >
+      Sensitive values for usernames and passwords must be unique.
+      Please ensure admin user, admin password, db password,
+      and admin API user are all different.
+    success_msg: "All sensitive usernames and passwords are unique."
 
 - name: "Validate additional env variables for service"
   ansible.builtin.assert:
@@ -85,3 +121,10 @@
       and it must not have sensitive data like 'pass', 'secret', 'token', 'key', or 'cred'.
   no_log: true
   loop: "{{ listmonk_service_additional_env_vars }}"
+
+- name: Validate Listmonk API settings JSON
+  assert:
+    that:
+      - listmonk_api_settings_payload | from_json is mapping
+    fail_msg: "The listmonk_api_settings_payload is not valid JSON."
+  no_log: true

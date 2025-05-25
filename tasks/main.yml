@@ -52,12 +52,50 @@
         ansible.builtin.fail:
           msg: "❌ Aborting: Could not connect to PostgreSQL at {{ listmonk_config_db_host }}:{{ listmonk_config_db_port }}."
 
-  - name: Force install of database scheme once
-    command: "{{ listmonk.home }}/bin/listmonk --config {{ listmonk.config_dir }}/config.toml --install --idempotent --yes"
+  - name: Force install of database scheme once and create API user
+    command: >
+      bash -c '{{ listmonk.home }}/bin/listmonk
+      --config {{ listmonk.config_dir }}/config.toml
+      --install --idempotent --yes 2>&1'
     environment:
       LISTMONK_ADMIN_USER: "{{ listmonk_bootstrap_LISTMONK_ADMIN_USER }}"
       LISTMONK_ADMIN_PASSWORD: "{{ listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD }}"
+      LISTMONK_ADMIN_API_USER: "{{ listmonk_bootstrap_LISTMONK_ADMIN_API_USER }}"
+    register: listmonk_bootstrap_output
     when: not listmonk_already_bootstrapped
+    no_log: true
+
+  - name: Extract API token from install output
+    set_fact:
+      listmonk_api_token: >-
+        {{ listmonk_bootstrap_output.stdout
+          | regex_search('LISTMONK_ADMIN_API_TOKEN="([^"]+)"', '\\1') }}
+    when: not listmonk_already_bootstrapped
+    no_log: true
+
+  - name: Fail if API token was not found in install output
+    fail:
+      msg: >
+        Failed to extract API token from Listmonk install output.
+        Make sure the install created the API user and printed the token.
+    when:
+      - not listmonk_already_bootstrapped
+      - listmonk_api_token is not defined or listmonk_api_token == ""
+    no_log: true
+
+  - name: Configure Listmonk settings via API
+    uri:
+      url: "{{ listmonk.api_url }}/settings"
+      method: PUT
+      headers:
+        Authorization: "token {{ listmonk_bootstrap_LISTMONK_ADMIN_API_USER }}:{{ listmonk_api_token }}"
+        Content-Type: "application/json"
+      body_format: raw
+      body:
+        app.site_name: "Mailing list renamed by Ansible"
+      status_code: 200
+    when:
+      - listmonk_api_token is defined and listmonk_api_token | length > 0
     no_log: true
 
   - name: Flush pending handlers
