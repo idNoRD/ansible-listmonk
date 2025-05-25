@@ -53,17 +53,20 @@
           msg: "❌ Aborting: Could not connect to PostgreSQL at {{ listmonk_config_db_host }}:{{ listmonk_config_db_port }}."
 
   - name: Force install of database scheme once and create API user
-    command: >
-      bash -c '{{ listmonk.home }}/bin/listmonk
-      --config {{ listmonk.config_dir }}/config.toml
-      --install --idempotent --yes 2>&1'
+    shell: >
+      {{ listmonk.home }}/bin/listmonk --config {{ listmonk.config_dir }}/config.toml --install --idempotent --yes 2>&1
     environment:
       LISTMONK_ADMIN_USER: "{{ listmonk_bootstrap_LISTMONK_ADMIN_USER }}"
       LISTMONK_ADMIN_PASSWORD: "{{ listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD }}"
       LISTMONK_ADMIN_API_USER: "{{ listmonk_bootstrap_LISTMONK_ADMIN_API_USER }}"
     register: listmonk_bootstrap_output
     when: not listmonk_already_bootstrapped
-    no_log: true
+    no_log: "{{ not debug_mode | default(false) }}"
+
+  - name: Debug listmonk install output (dev only)
+    debug:
+      var: listmonk_bootstrap_output.stdout_lines
+    when: debug_mode | default(false)
 
   - name: Extract API token from install output
     set_fact:
@@ -71,7 +74,7 @@
         {{ listmonk_bootstrap_output.stdout
           | regex_search('LISTMONK_ADMIN_API_TOKEN="([^"]+)"', '\\1') }}
     when: not listmonk_already_bootstrapped
-    no_log: true
+    no_log: "{{ not debug_mode | default(false) }}"
 
   - name: Fail if API token was not found in install output
     fail:
@@ -81,7 +84,7 @@
     when:
       - not listmonk_already_bootstrapped
       - listmonk_api_token is not defined or listmonk_api_token == ""
-    no_log: true
+    no_log: "{{ not debug_mode | default(false) }}"
 
   - name: Configure Listmonk settings via API
     uri:
@@ -96,7 +99,7 @@
       status_code: 200
     when:
       - listmonk_api_token is defined and listmonk_api_token | length > 0
-    no_log: true
+    no_log: "{{ not debug_mode | default(false) }}"
 
   - name: Flush pending handlers
     ansible.builtin.meta: flush_handlers
