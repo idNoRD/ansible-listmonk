@@ -135,7 +135,7 @@
         Authorization: "token {{ listmonk_bootstrap_LISTMONK_ADMIN_API_USER }}:{{ listmonk_api_token }}"
         Content-Type: "application/json"
       body_format: raw
-      body: "{{ list.api_settings_payload | to_json }}"
+      body: "{{ listmonk.api_settings_payload | to_json }}"
       status_code: 200
     when:
       - listmonk.override_settings

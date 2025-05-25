@@ -82,11 +82,11 @@ listmonk_api_settings_payload:
   app.site_name: "Mailing list (managed by Ansible role)"
   smtp:
     - enabled: true
-      host: "example.com"
+      host: "smtp.configured-by-ansible.local"
       hello_hostname: ""
       port: 25
       auth_protocol: "None"
-      username: ""
+      username: "username"
       email_headers:
         - {}
       max_conns: 10
@@ -94,5 +94,5 @@ listmonk_api_settings_payload:
       idle_timeout: "15s"
       wait_timeout: "5s"
       tls_type: "STARTTLS"
-      tls_skip_verify: true
+      tls_skip_verify: false
 
