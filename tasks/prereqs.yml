@@ -122,9 +122,17 @@
   no_log: true
   loop: "{{ listmonk_service_additional_env_vars }}"
 
-- name: Validate Listmonk API settings JSON
+- name: Validate Listmonk API settings structure and SMTP config
   assert:
     that:
-      - listmonk_api_settings_payload | from_json is mapping
-    fail_msg: "The listmonk_api_settings_payload is not valid JSON."
+      - listmonk_api_settings_payload is mapping
+      - "'smtp' in listmonk_api_settings_payload"
+      - listmonk_api_settings_payload.smtp is iterable
+      - listmonk_api_settings_payload.smtp | selectattr('enabled') | list | length > 0
+    fail_msg: >-
+      listmonk_api_settings_payload must:
+        - be a dictionary (mapping),
+        - contain 'smtp' key,
+        - have at least one SMTP entry with enabled: true.
   no_log: true
+  when: listmonk.override_settings

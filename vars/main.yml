@@ -14,5 +14,6 @@ listmonk: # noqa var-naming this is an internal dict of interpolated values
   service_start_args: "{{ listmonk_service_start_args }}"
   bootstrap_mnemonic: "# idNoRD/listmonk: bootstrapped"
   db_is_on_the_same_host: "{{ listmonk_db_is_on_the_same_host }}"
+  override_settings: "{{ listmonk_override_settings }}"
   api_url: "{{ listmonk_api_url }}"
   api_settings_payload: "{{ listmonk_api_settings_payload }}"
