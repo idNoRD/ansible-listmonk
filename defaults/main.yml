@@ -75,9 +75,24 @@ listmonk_restart_health_check_delay: 5
 listmonk_restart_health_check_retries: 3
 
 # Update Settings using Listmonk API
+listmonk_override_settings: false
 listmonk_api_url: "{{ listmonk_root_url }}/api"
 #listmonk_api_token: "" # optional variable to use api of existing listmonk
-listmonk_api_settings_payload: |
-  {
-    "app.site_name": "Mailing list (managed by Ansible role)"
-  }
+listmonk_api_settings_payload:
+  app.site_name: "Mailing list (managed by Ansible role)"
+  smtp:
+    - enabled: true
+      host: "example.com"
+      hello_hostname: ""
+      port: 25
+      auth_protocol: "None"
+      username: ""
+      email_headers:
+        - {}
+      max_conns: 10
+      max_msg_retries: 2
+      idle_timeout: "15s"
+      wait_timeout: "5s"
+      tls_type: "STARTTLS"
+      tls_skip_verify: true
+
