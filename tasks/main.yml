@@ -68,19 +68,25 @@
       var: listmonk_bootstrap_output.stdout_lines
     when: debug_mode | default(false)
 
-  - name: Extract API token from stdout_lines safely
+  - name: Find line containing API token
     set_fact:
-      listmonk_api_token: >-
+      listmonk_api_token_line: >-
         {{
-          (
-            (listmonk_bootstrap_output.stdout_lines
-             | select('search', 'LISTMONK_ADMIN_API_TOKEN')
-             | list
-            ) | first | default('')
-          )
-          | regex_search('LISTMONK_ADMIN_API_TOKEN="([^"]+)"', '\\1', default='')
+          (listmonk_bootstrap_output.stdout_lines
+           | select('search', 'LISTMONK_ADMIN_API_TOKEN=')
+           | list
+          ) | first | default('')
         }}
     when: not listmonk_already_bootstrapped
+    no_log: "{{ not debug_mode | default(false) }}"
+
+  - name: Extract API token from found line
+    set_fact:
+      listmonk_api_token: >-
+        {{ listmonk_api_token_line | regex_search('LISTMONK_ADMIN_API_TOKEN="([^"]+)"', '\\1', default='') }}
+    when:
+      - not listmonk_already_bootstrapped
+      - listmonk_api_token_line != ''
     no_log: "{{ not debug_mode | default(false) }}"
 
   - name: Fail if API token was not found in install output
