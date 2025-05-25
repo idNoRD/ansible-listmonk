@@ -80,22 +80,13 @@
     when: not listmonk_already_bootstrapped
     no_log: "{{ not debug_mode | default(false) }}"
 
-  - name: Extract API token from found line
+  - name: Extract API token from found line using split
     set_fact:
-      listmonk_api_token: >-
-        {% set prefix = 'LISTMONK_ADMIN_API_TOKEN="' %}
-        {% set start_pos = listmonk_api_token_line.find(prefix) + (prefix | length) %}
-        {% set end_pos = listmonk_api_token_line.find('"', start_pos) %}
-        {{
-          (
-            listmonk_api_token_line[start_pos:end_pos]
-            if (prefix in listmonk_api_token_line and end_pos > start_pos)
-            else ''
-          ).strip()
-        }}
+      listmonk_api_token: "{{ (listmonk_api_token_line.split('LISTMONK_ADMIN_API_TOKEN=\"')[1].split('\"')[0]).strip() if 'LISTMONK_ADMIN_API_TOKEN=\"' in listmonk_api_token_line else '' }}"
     when:
       - not listmonk_already_bootstrapped
       - listmonk_api_token_line != ''
+      - listmonk_api_token_line.count('"') >= 2
     no_log: "{{ not debug_mode | default(false) }}"
 
   - name: Fail if API token was not found in install output
@@ -106,21 +97,6 @@
     when:
       - not listmonk_already_bootstrapped
       - listmonk_api_token is not defined or listmonk_api_token == ""
-    no_log: "{{ not debug_mode | default(false) }}"
-
-  - name: Configure Listmonk settings via API
-    uri:
-      url: "{{ listmonk.api_url }}/settings"
-      method: PUT
-      headers:
-        Authorization: "token {{ listmonk_bootstrap_LISTMONK_ADMIN_API_USER }}:{{ listmonk_api_token }}"
-        Content-Type: "application/json"
-      body_format: raw
-      body:
-        app.site_name: "Mailing list renamed by Ansible"
-      status_code: 200
-    when:
-      - listmonk_api_token is defined and listmonk_api_token | length > 0
     no_log: "{{ not debug_mode | default(false) }}"
 
   - name: Flush pending handlers
@@ -146,3 +122,18 @@
 
   - name: Flush pending handlers
     ansible.builtin.meta: flush_handlers
+
+  - name: Configure Listmonk settings via API
+    uri:
+      url: "{{ listmonk.api_url }}/settings"
+      method: PUT
+      headers:
+        Authorization: "token {{ listmonk_bootstrap_LISTMONK_ADMIN_API_USER }}:{{ listmonk_api_token }}"
+        Content-Type: "application/json"
+      body_format: raw
+      body:
+        app.site_name: "Mailing list renamed by Ansible"
+      status_code: 200
+    when:
+      - listmonk_api_token is defined and listmonk_api_token | length > 0
+    no_log: "{{ not debug_mode | default(false) }}"
