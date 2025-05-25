@@ -83,7 +83,14 @@
   - name: Extract API token from found line
     set_fact:
       listmonk_api_token: >-
-        {{ listmonk_api_token_line | regex_search('LISTMONK_ADMIN_API_TOKEN="([^"]+)"', '\\1', default='') }}
+        {% set prefix = 'LISTMONK_ADMIN_API_TOKEN="' %}
+        {% set start_pos = listmonk_api_token_line.find(prefix) + (prefix | length) %}
+        {% set end_pos = listmonk_api_token_line.find('"', start_pos) %}
+        {{
+          listmonk_api_token_line[start_pos:end_pos]
+          if (prefix in listmonk_api_token_line and end_pos > start_pos)
+          else ''
+        }}
     when:
       - not listmonk_already_bootstrapped
       - listmonk_api_token_line != ''
