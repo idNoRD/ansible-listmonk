@@ -65,7 +65,7 @@ ansible-galaxy role install idNoRD.listmonk
 ```
 ```yaml
 ---
-- hosts: listmonk_servers
+- hosts: listmonk_server
   vars:
     listmonk_version: "v5.0.0"
     listmonk_archive: "listmonk_5.0.0_linux_amd64.tar.gz"
@@ -78,7 +78,41 @@ ansible-galaxy role install idNoRD.listmonk
   roles:
     - idNoRD.listmonk
 ```
-
+```yaml
+---
+- hosts: listmonk_server
+  vars:
+    listmonk_version: "v5.0.0"
+    listmonk_archive: "listmonk_5.0.0_linux_amd64.tar.gz"
+    listmonk_bootstrap_LISTMONK_ADMIN_USER: "listmonk"
+    listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD: "changeAdminPassword"
+    listmonk_config_db_host: "localhost"
+    listmonk_config_db_database: "listmonk"
+    listmonk_config_db_user: "listmonk"
+    listmonk_config_db_password: "changeDbPassword"
+    listmonk_override_settings: true
+    listmonk_api_settings_payload:
+      app.site_name: "Mailing list (managed by Ansible role)"
+      app.lang: "en"
+      upload.provider: "filesystem"
+      smtp:
+        - enabled: true
+          host: "smtp.configured-by-ansible.local"
+          hello_hostname: ""
+          port: 25
+          auth_protocol: "None"
+          username: "username"
+          email_headers:
+            - {}
+          max_conns: 10
+          max_msg_retries: 2
+          idle_timeout: "15s"
+          wait_timeout: "5s"
+          tls_type: "STARTTLS"
+          tls_skip_verify: false
+  roles:
+    - idNoRD.listmonk
+```
 License
 ---
 

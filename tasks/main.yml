@@ -65,14 +65,14 @@
 
   - name: Debug listmonk install output (dev only)
     debug:
-      var: listmonk_bootstrap_output.stdout_lines
+      var: listmonk_bootstrap_output
     when: debug_mode | default(false)
 
   - name: Find line containing API token
     set_fact:
       listmonk_api_token_line: >-
         {{
-          (listmonk_bootstrap_output.stdout_lines
+          (listmonk_bootstrap_output
            | select('search', 'LISTMONK_ADMIN_API_TOKEN=')
            | list
           ) | first | default('')
@@ -103,6 +103,21 @@
       - listmonk_api_token is not defined or listmonk_api_token == ""
     no_log: "{{ not debug_mode | default(false) }}"
 
+  - name: Configure Listmonk settings via API
+    uri:
+      url: "{{ listmonk.api_url }}/settings"
+      method: PUT
+      headers:
+        Authorization: "token {{ listmonk_bootstrap_LISTMONK_ADMIN_API_USER }}:{{ listmonk_api_token }}"
+        Content-Type: "application/json"
+      body_format: raw
+      body: "{{ listmonk.api_settings_payload | to_json }}"
+      status_code: 200
+    when:
+      - listmonk.override_settings
+      - listmonk_api_token is defined and listmonk_api_token | length > 0
+    no_log: "{{ not debug_mode | default(false) }}"
+
   - name: Flush pending handlers
     ansible.builtin.meta: flush_handlers
 
@@ -119,25 +134,30 @@
     when:
       - not ansible_local.listmonk.general.bootstrapped | default(false) | bool # it was not bootstrapped prior to the current role's execution
       - listmonk_service_status.status.ActiveState == "active"                  # but it is now
-    ansible.builtin.assert: { that: true, quiet: true }
+    ansible.builtin.debug:
+      msg: "Setup bootstrapped successfully"
     changed_when: true
     notify:
       - bootstrapped
 
+  - name: Get full systemctl status output
+    ansible.builtin.command: "systemctl status {{ listmonk.service_name }}"
+    register: listmonk_systemctl_output
+    changed_when: false
+    failed_when: false
+    when:
+      - listmonk_service_status.status.ActiveState != "active"
+
+  - name: Assert listmonk service is active, else print systemctl status
+    ansible.builtin.assert:
+      that:
+        - listmonk_service_status.status.ActiveState == "active"
+      fail_msg: |
+        The {{ listmonk.service_name }} service is NOT active.
+        
+        systemctl status output:
+        {{ listmonk_systemctl_output.stdout | default('No systemctl output available') }}
+    changed_when: false
+
   - name: Flush pending handlers
     ansible.builtin.meta: flush_handlers
-
-  - name: Configure Listmonk settings via API
-    uri:
-      url: "{{ listmonk.api_url }}/settings"
-      method: PUT
-      headers:
-        Authorization: "token {{ listmonk_bootstrap_LISTMONK_ADMIN_API_USER }}:{{ listmonk_api_token }}"
-        Content-Type: "application/json"
-      body_format: raw
-      body: "{{ listmonk.api_settings_payload | to_json }}"
-      status_code: 200
-    when:
-      - listmonk.override_settings
-      - listmonk_api_token is defined and listmonk_api_token | length > 0
-    no_log: "{{ not debug_mode | default(false) }}"

@@ -80,6 +80,8 @@ listmonk_api_url: "{{ listmonk_root_url }}/api"
 #listmonk_api_token: "" # optional variable to use api of existing listmonk
 listmonk_api_settings_payload:
   app.site_name: "Mailing list (managed by Ansible role)"
+  app.lang: "en"
+  upload.provider: "filesystem"
   smtp:
     - enabled: true
       host: "smtp.configured-by-ansible.local"

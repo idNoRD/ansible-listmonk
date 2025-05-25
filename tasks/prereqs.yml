@@ -136,3 +136,26 @@
         - have at least one SMTP entry with enabled: true.
   no_log: true
   when: listmonk.override_settings
+
+- name: Validate listmonk_api_settings_payload.app.lang is defined and not empty
+  assert:
+    that:
+      - "'app.lang' in listmonk_api_settings_payload"
+      - listmonk_api_settings_payload['app.lang'] | length > 0
+    fail_msg: >-
+      The 'app.lang' field must be defined and not empty in listmonk_api_settings_payload.
+      Example:
+        app.lang: "en"
+  when: listmonk.override_settings
+
+- name: Validate listmonk_api_settings_payload.upload.provider is defined and not empty
+  assert:
+    that:
+      - "'upload.provider' in listmonk_api_settings_payload"
+      - listmonk_api_settings_payload['upload.provider'] | length > 0
+    fail_msg: >-
+      The 'upload.provider' field must be defined and not empty in listmonk_api_settings_payload.
+      Examples:
+        upload.provider: "filesystem"
+        upload.provider: "s3"
+  when: listmonk.override_settings
