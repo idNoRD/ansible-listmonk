@@ -87,9 +87,11 @@
         {% set start_pos = listmonk_api_token_line.find(prefix) + (prefix | length) %}
         {% set end_pos = listmonk_api_token_line.find('"', start_pos) %}
         {{
-          listmonk_api_token_line[start_pos:end_pos]
-          if (prefix in listmonk_api_token_line and end_pos > start_pos)
-          else ''
+          (
+            listmonk_api_token_line[start_pos:end_pos]
+            if (prefix in listmonk_api_token_line and end_pos > start_pos)
+            else ''
+          ).strip()
         }}
     when:
       - not listmonk_already_bootstrapped
