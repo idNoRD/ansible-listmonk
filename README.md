@@ -317,7 +317,8 @@ exit 1
 <summary>content of listmonk-only.sh</summary>
 
 ### Vagrant will execute this script on your Virtual Machine (it is not for your main host machine)
-#### The purpose of the bash script is to install ansible, download the role, create a playbook and run ansible playbook that uses the role
+#### The purpose of the bash script is to install ansible, get the role with your custom changes, create a playbook and run ansible playbook that uses the role
+#### there are two options to get the role with your custom changes: download the role from your custom github repo OPTION 1 or use the source code of the role on your Host maniche that is synced to VM OPTION 2
 You can change the script to download the role from your custom branch
 
 ```
