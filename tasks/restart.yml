@@ -18,6 +18,7 @@
       retries: "{{ listmonk_restart_health_check_retries }}"
       delay: "{{ listmonk_restart_health_check_delay }}"
       when: listmonk_restart_health_check
+      failed_when: false # prevent failing to show status from rescue and fail from rescue below
 
   rescue:
 
