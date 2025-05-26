@@ -117,3 +117,160 @@ License
 ---
 
 MIT
+
+
+### Developer guide
+<details>
+<summary>Install and configure Vagrant</summary>
+
+### Provides ability to run a Virtual Machine for dev and testing purposes
+#### The purpose of the Vagrantfile is to have locally running "EC2 instance" with available service manager (systemd) because docker doesn't provide convenient way to test it
+You can change the script to download the role from your custom branch
+
+Useful commands:
+```text
+# To start/restart VM from scratch and re-executing all sh scripts that run ansible role
+vagrant destroy -f && vagrant up --provision
+
+# To connect to VM
+vagrant ssh
+
+# To see an IP address of the VM. So you can open for example: http://192.168.1.123:9000
+vagrant ssh -c "ip addr show"
+```
+
+### content of Vagrantfile
+```text
+Vagrant.configure("2") do |config|
+
+config.vm.box = "gbailey/al2023"
+
+config.vm.network "private_network", type: "dhcp"
+# To find out an IP address use: 
+# vagrant ssh -c "ip addr show"
+
+config.vm.provider "virtualbox" do |vb|
+# Display the VirtualBox GUI when booting the machine
+vb.gui = true
+    # Customize the amount of memory on the VM:
+    vb.memory = "4096"
+    # Customize the amount of CPU on the VM:
+    vb.cpus = "3"
+    vb.customize ["modifyvm", :id, "--cpuexecutioncap", "80"]
+end
+
+config.vm.provision "shell", name: "install-postgres", path: "postgres-only.sh"
+config.vm.provision "shell", name: "install-listmonk", path: "listmonk-only.sh"
+
+end
+```
+</details>
+
+<details>
+
+<summary>content of postgres-only.sh</summary>
+
+```
+#!/bin/bash
+set -e
+
+echo "ERROR: PLEASE REPLACE THIS MESSAGE WITH YOUR CUSTOM POSTGRES INSTALL"
+exit 1
+
+```
+</details>
+
+<details>
+
+<summary>content of listmonk-only.sh</summary>
+
+### Vagrant will execute this script on your Virtual Machine (it is not for your main host machine)
+#### The purpose of the bash script is to install ansible, download the role, create a playbook and run ansible playbook that uses the role
+You can change the script to download the role from your custom branch
+
+```
+#!/bin/bash
+set -e
+
+sudo dnf install python3.12 augeas-libs -y
+
+sudo python3.12 -m venv /opt/ansible-for-listmonk/
+sudo /opt/ansible-for-listmonk/bin/pip install --upgrade pip
+sudo /opt/ansible-for-listmonk/bin/pip install ansible
+
+
+
+# HERE you can change the script to download the role from your custom branch
+/opt/ansible-for-listmonk/bin/ansible-galaxy role install idNoRD.listmonk --force
+# /opt/ansible-for-listmonk/bin/ansible-galaxy role install git+https://github.com/idNoRD/ansible-listmonk.git,feature/234_qwer_v26 --force
+
+# --force is to always download to get your latest changes. Use --force for development purposes only
+
+
+
+
+
+echo "Step Create playbook_listmonk"
+sudo rm -rf playbook_listmonk.yml
+sudo touch playbook_listmonk.yml
+sudo tee playbook_listmonk.yml <<EOF
+---
+- name: Install and Configure listmonk
+  hosts: localhost
+  vars:
+    ansible_python_interpreter: /opt/ansible-for-listmonk/bin/python3.12
+    listmonk_config_db_database: "abcd"
+    listmonk_config_db_user: "abcd"
+    listmonk_config_db_password: "your_abcd_database_password_here"
+    debug_mode: true
+    listmonk_restart_health_check_retries: 5
+    listmonk_override_settings: true
+    listmonk_api_settings_payload:
+      app.site_name: "Mailing list (managed by Ansible role)"
+      app.lang: "en"
+      upload.provider: "filesystem"
+#      upload.max_file_size: 5000
+#      upload.extensions:
+#        - "jpg"
+#        - "jpeg"
+#        - "png"
+#        - "gif"
+#        - "svg"
+#        - "*"
+#      upload.filesystem.upload_path: "uploads"
+#      upload.filesystem.upload_uri: "/uploads"
+      smtp:
+        - enabled: true
+          host: "smtp.example.com"
+          hello_hostname: ""
+          port: 25
+          auth_protocol: "None"
+          username: ""
+          email_headers:
+            - {}
+          max_conns: 10
+          max_msg_retries: 2
+          idle_timeout: "15s"
+          wait_timeout: "5s"
+          tls_type: "STARTTLS"
+          tls_skip_verify: true
+  roles:
+    - idNoRD.listmonk
+EOF
+echo "Step Run created playbook_listmonk.yml"
+# Temporarily disable 'set -e' to check the exit status of ansible-playbook
+set +e
+/opt/ansible-for-listmonk/bin/ansible-playbook -c local -i localhost, playbook_listmonk.yml -v
+listmonk_ansible_exit_code=$?  # Capture the exit status of ansible-playbook
+# Re-enable 'set -e' so that the script will exit on future errors
+set -e
+# Check if ansible-playbook failed
+if [ $listmonk_ansible_exit_code -ne 0 ]; then
+    echo "Ansible playbook_listmonk failed with exit code $listmonk_ansible_exit_code, exiting the script."
+    exit 1
+else
+  echo "🌍 **SYSTEM STATUS:** playbook_listmonk completed successfully"
+fi
+
+```
+</details>
