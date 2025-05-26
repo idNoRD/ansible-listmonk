@@ -103,6 +103,12 @@
       - listmonk_api_token is not defined or listmonk_api_token == ""
     no_log: "{{ not debug_mode | default(false) }}"
 
+  - name: Flush pending handlers
+    ansible.builtin.meta: flush_handlers
+
+  - name: "Start and wait for listmonk service"
+    ansible.builtin.include_tasks: start.yml
+
   - name: Show curl equivalent for Listmonk settings API
     debug:
       msg: >
@@ -126,12 +132,12 @@
       - listmonk.override_settings
       - listmonk_api_token is defined and listmonk_api_token | length > 0
     no_log: "{{ not debug_mode | default(false) }}"
-
+    notify:
+      - restart listmonk
   - name: Flush pending handlers
     ansible.builtin.meta: flush_handlers
-
-  - name: "Start and wait for listmonk service"
-    ansible.builtin.include_tasks: start.yml
+    when:
+      - listmonk.override_settings
 
   - name: Check service status
     ansible.builtin.systemd_service:
