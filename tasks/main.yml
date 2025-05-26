@@ -97,7 +97,7 @@
 
   - name: Check if Listmonk API token was extracted
     block:
-        ansible.builtin.fail:
+      - ansible.builtin.fail:
           msg: >
             ❌ Failed to extract API token from Listmonk install output.
             Make sure the --install created the API user and printed the token.
