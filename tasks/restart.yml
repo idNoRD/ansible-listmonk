@@ -7,37 +7,35 @@
     daemon_reload: true
   become: true
 
-- name: Wait until {{ listmonk.service_name }} responds to health check
+- name: "Wait until service becomes active at {{ listmonk.health_url }}"
+  ansible.builtin.uri:
+    url: "{{ listmonk.health_url }}"
+  register: listmonk_status
+  until: listmonk_status.status == 200
+  retries: "{{ listmonk_restart_health_check_retries }}"
+  delay: "{{ listmonk_restart_health_check_delay }}"
+  ignore_errors: true # prevent failing because we want to show status and then fail see below
+  when: listmonk_restart_health_check
+
+- name: Get full systemctl status output
+  ansible.builtin.command: "systemctl status {{ listmonk.service_name }}"
+  register: listmonk_systemctl_output
+  changed_when: false
+  failed_when: false
+  when:
+    - listmonk_restart_health_check
+    - listmonk_status.status is not defined or listmonk_status.status != 200
+
+- name: Fail if health check failed
   block:
-    - name: "Wait until service becomes active at {{ listmonk.health_url }}"
-      ansible.builtin.uri:
-        url: "{{ listmonk.health_url }}"
-      register: listmonk_status
-      until: listmonk_status.status == 200
-      retries: "{{ listmonk_restart_health_check_retries }}"
-      delay: "{{ listmonk_restart_health_check_delay }}"
-      ignore_errors: true # prevent failing because we want to show status and then fail see below
-      when: listmonk_restart_health_check
-
-    - name: Get full systemctl status output
-      ansible.builtin.command: "systemctl status {{ listmonk.service_name }}"
-      register: listmonk_systemctl_output
-      changed_when: false
-      failed_when: false
-      when:
-        - listmonk_restart_health_check
-        - listmonk_status.status is not defined or listmonk_status.status != 200
-
-    - name: Fail if health check failed
-      block:
-        - ansible.builtin.fail:
-            msg: |
-              ❌ Health check failed after {{ listmonk_restart_health_check_retries }} attempts.
-              Error: {{ listmonk_status.msg | default('No error message available') }}
-              
-              ───── The "{{ listmonk.service_name }}" service status output ─────
-              {{ listmonk_systemctl_output.stdout | default('No systemctl output available') | indent(6) }}
-              ──────────────────────────────────────────────────────────────────────
-      when:
-        - listmonk_restart_health_check
-        - listmonk_status.status is not defined or listmonk_status.status != 200
+    - ansible.builtin.fail:
+        msg: |
+          ❌ Health check failed after {{ listmonk_restart_health_check_retries }} attempts.
+          Error: {{ listmonk_status.msg | default('No error message available') }}
+          
+          ───── The "{{ listmonk.service_name }}" service status output ─────
+          {{ listmonk_systemctl_output.stdout | default('No systemctl output available') | indent(6) }}
+          ──────────────────────────────────────────────────────────────────────
+  when:
+    - listmonk_restart_health_check
+    - listmonk_status.status is not defined or listmonk_status.status != 200
