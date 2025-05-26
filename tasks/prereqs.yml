@@ -122,6 +122,17 @@
   no_log: true
   loop: "{{ listmonk_service_additional_env_vars }}"
 
+- name: Validate listmonk_restart_health_check_delay
+  ansible.builtin.assert:
+    that:
+      - listmonk_restart_health_check_delay is defined
+      - listmonk_restart_health_check_delay | int > 10
+    quiet: true
+    fail_msg: >
+      The listmonk_restart_health_check_delay must be a number greater than 10.
+      Please set it appropriately (e.g. 15).
+    success_msg: "listmonk_restart_health_check_delay is valid"
+
 - name: Validate Listmonk API settings structure and SMTP config
   assert:
     that:

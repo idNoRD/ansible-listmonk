@@ -63,6 +63,7 @@ This role assumes the following are already installed or managed externally:
 ```text
 ansible-galaxy role install idNoRD.listmonk
 ```
+### Install only:
 ```yaml
 ---
 - hosts: listmonk_server
@@ -78,6 +79,7 @@ ansible-galaxy role install idNoRD.listmonk
   roles:
     - idNoRD.listmonk
 ```
+### Install and override Settings:
 ```yaml
 ---
 - hosts: listmonk_server
@@ -92,24 +94,139 @@ ansible-galaxy role install idNoRD.listmonk
     listmonk_config_db_password: "changeDbPassword"
     listmonk_override_settings: true
     listmonk_api_settings_payload:
-      app.site_name: "Mailing list (managed by Ansible role)"
-      app.lang: "en"
-      upload.provider: "filesystem"
+      app.site_name: Mailing list (managed by Ansible role)
+      app.root_url: http://localhost:9000
+      app.favicon_url: ""
+      app.from_email: "listmonk <noreply@listmonk.yoursite.com>"
+      app.logo_url: ""
+      app.concurrency: 10
+      app.message_rate: 10
+      app.batch_size: 1000
+      app.max_send_errors: 1000
+      app.message_sliding_window: false
+      app.message_sliding_window_duration: 1h
+      app.message_sliding_window_rate: 10000
+      app.cache_slow_queries: false
+      app.cache_slow_queries_interval: "0 3 * * *"
+      app.enable_public_archive: true
+      app.enable_public_subscription_page: true
+      app.enable_public_archive_rss_content: true
+      app.send_optin_confirmation: true
+      app.check_updates: true
+      app.notify_emails: []
+      app.lang: en
+      privacy.individual_tracking: false
+      privacy.unsubscribe_header: true
+      privacy.allow_blocklist: true
+      privacy.allow_export: true
+      privacy.allow_wipe: true
+      privacy.allow_preferences: true
+      privacy.exportable:
+        - profile
+        - subscriptions
+        - campaign_views
+        - link_clicks
+      privacy.domain_blocklist: []
+      privacy.domain_allowlist: []
+      privacy.record_optin_ip: false
+      security.enable_captcha: false
+      security.captcha_key: ""
+      security.captcha_secret: ""
+      security.oidc:
+        enabled: false
+        client_id: ""
+        provider_url: ""
+        client_secret: ""
+        provider_name: ""
+      upload.provider: filesystem
+      upload.max_file_size: 5000
+      upload.extensions:
+        - jpg
+        - jpeg
+        - png
+        - gif
+        - svg
+        - "*"
+      upload.filesystem.upload_path: uploads
+      upload.filesystem.upload_uri: /uploads
+      upload.s3.url: https://ap-south-1.s3.amazonaws.com
+      upload.s3.public_url: ""
+      upload.s3.aws_access_key_id: ""
+      upload.s3.aws_secret_access_key: ""
+      upload.s3.aws_default_region: ap-south-1
+      upload.s3.bucket: ""
+      upload.s3.bucket_domain: ""
+      upload.s3.bucket_path: /
+      upload.s3.bucket_type: public
+      upload.s3.expiry: 167h
       smtp:
-        - enabled: true
-          host: "smtp.configured-by-ansible.local"
-          hello_hostname: ""
+        - host: smtp.yoursite.com
           port: 25
-          auth_protocol: "None"
-          username: "username"
-          email_headers:
-            - {}
+          enabled: true
+          password: password
+          tls_type: STARTTLS
+          username: username
           max_conns: 10
+          idle_timeout: 15s
+          wait_timeout: 5s
+          auth_protocol: cram
+          email_headers: []
+          hello_hostname: ""
           max_msg_retries: 2
-          idle_timeout: "15s"
-          wait_timeout: "5s"
-          tls_type: "STARTTLS"
           tls_skip_verify: false
+        - host: smtp.gmail.com
+          port: 465
+          enabled: false
+          password: password
+          tls_type: TLS
+          username: username@gmail.com
+          max_conns: 10
+          idle_timeout: 15s
+          wait_timeout: 5s
+          auth_protocol: login
+          email_headers: []
+          hello_hostname: ""
+          max_msg_retries: 2
+          tls_skip_verify: false
+      messengers: []
+      bounce.enabled: false
+      bounce.webhooks_enabled: false
+      bounce.actions:
+        hard:
+          count: 1
+          action: blocklist
+        soft:
+          count: 2
+          action: none
+        complaint:
+          count: 1
+          action: blocklist
+      bounce.ses_enabled: false
+      bounce.sendgrid_enabled: false
+      bounce.sendgrid_key: ""
+      bounce.postmark:
+        enabled: false
+        password: ""
+        username: ""
+      bounce.forwardemail:
+        key: ""
+        enabled: false
+      bounce.mailboxes:
+        - host: pop.yoursite.com
+          port: 995
+          type: pop
+          enabled: false
+          password: password
+          username: username
+          return_path: bounce@listmonk.yoursite.com
+          tls_enabled: true
+          auth_protocol: userpass
+          scan_interval: 15m
+          tls_skip_verify: false
+      appearance.admin.custom_css: ""
+      appearance.admin.custom_js: ""
+      appearance.public.custom_css: ""
+      appearance.public.custom_js: ""
   roles:
     - idNoRD.listmonk
 ```
@@ -226,34 +343,139 @@ sudo tee playbook_listmonk.yml <<EOF
     listmonk_restart_health_check_retries: 5
     listmonk_override_settings: true
     listmonk_api_settings_payload:
-      app.site_name: "Mailing list (managed by Ansible role)"
-      app.lang: "en"
-      upload.provider: "filesystem"
-#      upload.max_file_size: 5000
-#      upload.extensions:
-#        - "jpg"
-#        - "jpeg"
-#        - "png"
-#        - "gif"
-#        - "svg"
-#        - "*"
-#      upload.filesystem.upload_path: "uploads"
-#      upload.filesystem.upload_uri: "/uploads"
-      smtp:
-        - enabled: true
-          host: "smtp.example.com"
-          hello_hostname: ""
-          port: 25
-          auth_protocol: "None"
+        app.site_name: Mailing list (managed by Ansible role)
+        app.root_url: http://localhost:9000
+        app.favicon_url: ""
+        app.from_email: "listmonk <noreply@listmonk.yoursite.com>"
+        app.logo_url: ""
+        app.concurrency: 10
+        app.message_rate: 10
+        app.batch_size: 1000
+        app.max_send_errors: 1000
+        app.message_sliding_window: false
+        app.message_sliding_window_duration: 1h
+        app.message_sliding_window_rate: 10000
+        app.cache_slow_queries: false
+        app.cache_slow_queries_interval: "0 3 * * *"
+        app.enable_public_archive: true
+        app.enable_public_subscription_page: true
+        app.enable_public_archive_rss_content: true
+        app.send_optin_confirmation: true
+        app.check_updates: true
+        app.notify_emails: []
+        app.lang: en
+        privacy.individual_tracking: false
+        privacy.unsubscribe_header: true
+        privacy.allow_blocklist: true
+        privacy.allow_export: true
+        privacy.allow_wipe: true
+        privacy.allow_preferences: true
+        privacy.exportable:
+          - profile
+          - subscriptions
+          - campaign_views
+          - link_clicks
+        privacy.domain_blocklist: []
+        privacy.domain_allowlist: []
+        privacy.record_optin_ip: false
+        security.enable_captcha: false
+        security.captcha_key: ""
+        security.captcha_secret: ""
+        security.oidc:
+          enabled: false
+          client_id: ""
+          provider_url: ""
+          client_secret: ""
+          provider_name: ""
+        upload.provider: filesystem
+        upload.max_file_size: 5000
+        upload.extensions:
+          - jpg
+          - jpeg
+          - png
+          - gif
+          - svg
+          - "*"
+        upload.filesystem.upload_path: uploads
+        upload.filesystem.upload_uri: /uploads
+        upload.s3.url: https://ap-south-1.s3.amazonaws.com
+        upload.s3.public_url: ""
+        upload.s3.aws_access_key_id: ""
+        upload.s3.aws_secret_access_key: ""
+        upload.s3.aws_default_region: ap-south-1
+        upload.s3.bucket: ""
+        upload.s3.bucket_domain: ""
+        upload.s3.bucket_path: /
+        upload.s3.bucket_type: public
+        upload.s3.expiry: 167h
+        smtp:
+          - host: smtp.yoursite.com
+            port: 25
+            enabled: true
+            password: password
+            tls_type: STARTTLS
+            username: username
+            max_conns: 10
+            idle_timeout: 15s
+            wait_timeout: 5s
+            auth_protocol: cram
+            email_headers: []
+            hello_hostname: ""
+            max_msg_retries: 2
+            tls_skip_verify: false
+          - host: smtp.gmail.com
+            port: 465
+            enabled: false
+            password: password
+            tls_type: TLS
+            username: username@gmail.com
+            max_conns: 10
+            idle_timeout: 15s
+            wait_timeout: 5s
+            auth_protocol: login
+            email_headers: []
+            hello_hostname: ""
+            max_msg_retries: 2
+            tls_skip_verify: false
+        messengers: []
+        bounce.enabled: false
+        bounce.webhooks_enabled: false
+        bounce.actions:
+          hard:
+            count: 1
+            action: blocklist
+          soft:
+            count: 2
+            action: none
+          complaint:
+            count: 1
+            action: blocklist
+        bounce.ses_enabled: false
+        bounce.sendgrid_enabled: false
+        bounce.sendgrid_key: ""
+        bounce.postmark:
+          enabled: false
+          password: ""
           username: ""
-          email_headers:
-            - {}
-          max_conns: 10
-          max_msg_retries: 2
-          idle_timeout: "15s"
-          wait_timeout: "5s"
-          tls_type: "STARTTLS"
-          tls_skip_verify: true
+        bounce.forwardemail:
+          key: ""
+          enabled: false
+        bounce.mailboxes:
+          - host: pop.yoursite.com
+            port: 995
+            type: pop
+            enabled: false
+            password: password
+            username: username
+            return_path: bounce@listmonk.yoursite.com
+            tls_enabled: true
+            auth_protocol: userpass
+            scan_interval: 15m
+            tls_skip_verify: false
+        appearance.admin.custom_css: ""
+        appearance.admin.custom_js: ""
+        appearance.public.custom_css: ""
+        appearance.public.custom_js: ""
   roles:
     - idNoRD.listmonk
 EOF

@@ -107,9 +107,9 @@
       - name: Fail due to missing API token
         ansible.builtin.fail:
           msg: >
-            ❌ Unable to get valid token. 
-            If this fails during bootstrap check listmonk_bootstrap_output. 
-            If this fails after bootstrap you need to set listmonk_api_token variable.
+            ❌ Unable to get valid token. (listmonk_already_bootstrapped={{ listmonk_already_bootstrapped }})
+            If this fails when listmonk_already_bootstrapped is False check listmonk_bootstrap_output. 
+            If this fails when listmonk_already_bootstrapped is True you can set listmonk_api_token variable.
     when:
       - listmonk.override_settings
     no_log: "{{ not (debug_mode | default(false)) }}"
@@ -138,6 +138,11 @@
 
   - name: "After override settings we need to restart and wait for listmonk service"
     ansible.builtin.include_tasks: restart.yml
+    when:
+      - listmonk.override_settings
+
+  - name: "Before overriding settings we need to start and wait for listmonk service"
+    ansible.builtin.include_tasks: start.yml
     when:
       - listmonk.override_settings
 
