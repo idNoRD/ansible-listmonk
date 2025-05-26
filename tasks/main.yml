@@ -114,13 +114,12 @@
       - listmonk.override_settings
     no_log: "{{ not (debug_mode | default(false)) }}"
 
-  - name: Flush pending handlers
-    ansible.builtin.meta: flush_handlers
-
-  - name: "Start and wait for listmonk service with config before applying settings"
+  - name: "Before overriding settings we need to start and wait for listmonk service"
     ansible.builtin.include_tasks: start.yml
+    when:
+      - listmonk.override_settings
 
-  - name: Configure Listmonk settings via API
+  - name: Override Listmonk settings via API
     uri:
       url: "{{ listmonk.api_url }}/settings"
       method: PUT
@@ -134,18 +133,11 @@
       - listmonk.override_settings
       - listmonk_api_token is defined and listmonk_api_token | length > 0
     register: api_config_result
-    notify:
-      - restart listmonk
     changed_when: api_config_result.json.data | default(false) | bool
     no_log: "{{ not (debug_mode | default(false)) }}"
 
-  - name: Flush pending handlers
-    ansible.builtin.meta: flush_handlers
-    when:
-      - listmonk.override_settings
-
-  - name: "Start and wait for listmonk service after applying Settings"
-    ansible.builtin.include_tasks: start.yml
+  - name: "After override settings we need to restart and wait for listmonk service"
+    ansible.builtin.include_tasks: restart.yml
     when:
       - listmonk.override_settings
 
@@ -154,6 +146,8 @@
       name: "{{ listmonk.service_name }}"
     register: listmonk_service_status
     changed_when: false
+    when:
+      - not ansible_local.listmonk.general.bootstrapped | default(false) | bool
 
   - name: "Notify that setup was bootstrapped successfully"
     when:
