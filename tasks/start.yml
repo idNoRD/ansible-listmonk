@@ -1,7 +1,7 @@
 ---
 - name: "Start {{ listmonk.service_name }} service"
   ansible.builtin.systemd:
-    name: listmonk
+    name: "{{ listmonk.service_name }}"
     enabled: true
     state: started
     daemon_reload: true
