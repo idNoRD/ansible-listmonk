@@ -9,6 +9,8 @@
     file: "restart.yml"
   listen: "restart listmonk"
 - name: "Display deprecation warning"
-  ansible.builtin.warn:
+  ansible.builtin.fail:
     msg: "⚠️ Deprecation warning: you are using the deprecated variable '{{ deprecated_variable | d('NotSet') }}', check docs on how to upgrade."
+  failed_when: false
+  changed_when: true
   listen: "print deprecation warning"
