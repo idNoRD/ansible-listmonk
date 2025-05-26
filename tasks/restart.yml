@@ -29,14 +29,15 @@
         - listmonk_status.status is not defined or listmonk_status.status != 200
 
     - name: Fail if health check failed
-      ansible.builtin.fail:
-        msg: |
-          ❌ Health check failed after {{ listmonk_restart_health_check_retries }} attempts.
-          Error: {{ listmonk_status.msg | default('No error message available') }}
-
-          ───── 🔴 The "{{ listmonk.service_name }}" service status output ─────
-          {{ listmonk_systemctl_output.stdout | default('No systemctl output available') | indent(6) }}
-          ──────────────────────────────────────────────────────────────────────
+      block:
+        - ansible.builtin.fail:
+            msg: |
+              ❌ Health check failed after {{ listmonk_restart_health_check_retries }} attempts.
+              Error: {{ listmonk_status.msg | default('No error message available') }}
+              
+              ───── The "{{ listmonk.service_name }}" service status output ─────
+              {{ listmonk_systemctl_output.stdout | default('No systemctl output available') | indent(6) }}
+              ──────────────────────────────────────────────────────────────────────
       when:
         - listmonk_restart_health_check
         - listmonk_status.status is not defined or listmonk_status.status != 200
