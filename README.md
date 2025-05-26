@@ -16,14 +16,17 @@ This role is primarily intended for Amazon Linux 2023, but it should also work o
 - [x] Create, start and enable `listmonk.service` systemd service for Listmonk
 - [x] Add role variables (see `defaults/main.yml`)
 - [x] Listmonk works with a PostgreSQL database already installed on the same machine. `Note: This Ansible role does not install or manage PostgreSQL.`
-- [x] Add basic health check and service status validation
-- [x] Publish [role on Ansible Galaxy](https://galaxy.ansible.com/ui/standalone/roles/idNoRD/listmonk)
+- [x] Basic health check and service status validation
+- [x] Published [role on Ansible Galaxy](https://galaxy.ansible.com/ui/standalone/roles/idNoRD/listmonk)
 - [x] Admin credentials are not stored in the Listmonk config file. They are provided as environment variables only during the initial bootstrap (one-time setup).
+- [x] Logs captured by systemd and logged via journald.
+- [x] Can override Settings using Listmonk API. Creates ADMIN_API_USER for that with a token.
+- [x] Developer guide
+- [x] Repository Funding is ready for your donate
 ### 🛠️ In Progress / Planned
-- [ ] Configure data and log directories
 - [ ] Optional: Set up NGINX as a reverse proxy (or expose option)
 - [ ] Add Molecule tests for role verification
-- [ ] Improve documentation with usage examples and variable reference
+- [ ] Update documentation with usage examples and variable reference
 
 ---
 
@@ -54,6 +57,8 @@ The following are a set of key variables used by the role:
 This role assumes the following are already installed or managed externally:
 
 - PostgreSQL (configured and running)
+
+We assume that for production you will have:
 - Certbot (or alternative certificate provisioning tool)
 - NGINX (or alternative reverse proxy solution)
 
@@ -246,14 +251,24 @@ You can change the script to download the role from your custom branch
 
 Useful commands:
 ```text
+OPTION 1:
 # To start/restart VM from scratch and re-executing all sh scripts that run ansible role
 vagrant destroy -f && vagrant up --provision
 
 # To connect to VM
 vagrant ssh
 
-# To see an IP address of the VM. So you can open for example: http://192.168.1.123:9000
-vagrant ssh -c "ip addr show"
+# Instead of downloading the role from Github repo everytime you can sync folders between your local source and the VM
+config.vm.synced_folder "/Users/<username>/work/myansible/ansible-listmonk", "/root/.ansible/roles/idNoRD.listmonk", create: true, type: "rsync"
+# Once you change the code on your local machine we can auto-update the role in the VM immediately
+vagrant rsync-auto
+# So after that we just can rerun ansible without reinstalling postgres and without redownloading ansible role
+# since my postgresql.sh is not idempotent yet I temporary comment it and uncomment later if I need OPTION 1 (see above)
+    #config.vm.provision "shell", name: "install-postgres", path: "userdata_scripts/postgres-only.sh"
+    config.vm.provision "shell", name: "install-listmonk", path: "userdata_scripts/listmonk-only.sh"
+# and then you can run. This is useful for quick re-run of ansible.
+vagrant up --provision
+
 ```
 
 ### content of Vagrantfile
@@ -262,9 +277,8 @@ Vagrant.configure("2") do |config|
 
 config.vm.box = "gbailey/al2023"
 
-config.vm.network "private_network", type: "dhcp"
-# To find out an IP address use: 
-# vagrant ssh -c "ip addr show"
+# Make sure that this IP is available in your network to avoid conflict
+config.vm.network "private_network", ip: "192.168.56.101"
 
 config.vm.provider "virtualbox" do |vb|
 # Display the VirtualBox GUI when booting the machine
