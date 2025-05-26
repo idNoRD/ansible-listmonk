@@ -163,15 +163,13 @@
     when:
       - listmonk_service_status.status.ActiveState != "active"
 
-  - name: Assert listmonk service is active, else print systemctl status
-    ansible.builtin.assert:
-      that:
-        - listmonk_service_status.status.ActiveState == "active"
-      fail_msg: >
-        ───── 🔴 The "{{ listmonk.service_name }}" service is **NOT active**. ─────
+  - name: Fail if Listmonk service is not active
+    ansible.builtin.fail:
+      msg: |
+        ───── 🔴 The "{{ listmonk.service_name }}" service is NOT active ─────
         {{ listmonk_systemctl_output.stdout | default('No systemctl output available') | indent(6) }}
-        ───────────────────────────────────
-    changed_when: false
+        ──────────────────────────────────────────────────────────────────────
+    when: listmonk_service_status.status.ActiveState != "active"
 
   - name: Flush pending handlers
     ansible.builtin.meta: flush_handlers
