@@ -7,11 +7,31 @@
     daemon_reload: true
   become: true
 
-- name: "Wait until {{ listmonk.service_name }} service becomes active {{ listmonk.health_url }}"
-  ansible.builtin.uri:
-    url: "{{ listmonk.health_url }}"
-  register: listmonk_status
-  until: listmonk_status.status == 200
-  retries: "{{ listmonk_restart_health_check_retries }}"
-  delay: "{{ listmonk_restart_health_check_delay }}"
+- name: Wait until {{ listmonk.service_name }} responds to health check
+  block:
+
+    - name: "Wait until service becomes active at {{ listmonk.health_url }}"
+      ansible.builtin.uri:
+        url: "{{ listmonk.health_url }}"
+      register: listmonk_status
+      until: listmonk_status.status == 200
+      retries: "{{ listmonk_restart_health_check_retries }}"
+      delay: "{{ listmonk_restart_health_check_delay }}"
+      when: listmonk_restart_health_check
+
+  rescue:
+
+    - name: Get full systemctl status output
+      ansible.builtin.command: "systemctl status {{ listmonk.service_name }}"
+      register: listmonk_systemctl_output
+      changed_when: false
+      failed_when: false
+
+    - name: Fail with systemctl status if health check failed
+      ansible.builtin.fail:
+        msg: |
+          ───── 🔴 The "{{ listmonk.service_name }}" service did NOT respond to health check ─────
+          {{ listmonk_systemctl_output.stdout | default('No systemctl output available') | indent(6) }}
+          ──────────────────────────────────────────────────────────────────────
+
   when: listmonk_restart_health_check
