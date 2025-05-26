@@ -92,11 +92,13 @@
       - listmonk_api_token_line.count('"') >= 2
     no_log: "{{ not debug_mode | default(false) }}"
 
-  - name: Fail if API token was not found in install output
-    fail:
-      msg: >
-        Failed to extract API token from Listmonk install output.
-        Make sure the install created the API user and printed the token.
+  - name: Check if Listmonk API token was extracted
+    block:
+      - name: Fail if API token was not found in install output
+        ansible.builtin.fail:
+          msg: >
+            ❌ Failed to extract API token from Listmonk install output.
+            Make sure the --install created the API user and printed the token.
     when:
       - not listmonk_already_bootstrapped
       - listmonk.override_settings
@@ -163,12 +165,14 @@
     when:
       - listmonk_service_status.status.ActiveState != "active"
 
-  - name: Fail if Listmonk service is not active
-    ansible.builtin.fail:
-      msg: |
-        ───── 🔴 The "{{ listmonk.service_name }}" service is NOT active ─────
-        {{ listmonk_systemctl_output.stdout | default('No systemctl output available') | indent(6) }}
-        ──────────────────────────────────────────────────────────────────────
+  - name: Ensure Listmonk service is running
+    block:
+      - name: Fail if Listmonk service is not active
+        ansible.builtin.fail:
+          msg: |
+            ───── 🔴 The "{{ listmonk.service_name }}" service is NOT active ─────
+            {{ listmonk_systemctl_output.stdout | default('No systemctl output available') | indent(6) }}
+            ──────────────────────────────────────────────────────────────────────
     when: listmonk_service_status.status.ActiveState != "active"
 
   - name: Flush pending handlers
