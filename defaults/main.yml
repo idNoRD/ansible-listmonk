@@ -35,7 +35,7 @@ listmonk_configure_firewalld: false
 listmonk_bootstrap_LISTMONK_ADMIN_USER: listmonk
 listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD: changeit
 listmonk_bootstrap_LISTMONK_ADMIN_API_USER: ansibleApiUser
-
+listmonk_bootstrap_install_args: "--idempotent"
 ### Configuration settings
 listmonk_http_enabled: true
 listmonk_http_port: 9000
