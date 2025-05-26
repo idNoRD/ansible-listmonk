@@ -18,7 +18,7 @@
       retries: "{{ listmonk_restart_health_check_retries }}"
       delay: "{{ listmonk_restart_health_check_delay }}"
       when: listmonk_restart_health_check
-      failed_when: false # prevent failing to show status from rescue and fail from rescue below
+      ignore_errors: true # prevent failing to show status from rescue and fail from rescue below
 
     - name: Fail manually to trigger rescue if health check never succeeded
       ansible.builtin.fail:
