@@ -20,6 +20,13 @@
       when: listmonk_restart_health_check
       failed_when: false # prevent failing to show status from rescue and fail from rescue below
 
+    - name: Fail manually to trigger rescue if health check never succeeded
+      ansible.builtin.fail:
+        msg: >
+          ❌ Health check failed after {{ listmonk_restart_health_check_retries }} attempts.
+          Error: {{ listmonk_status.msg | default('No error message available') }}
+      when: listmonk_status.status is not defined or listmonk_status.status != 200
+
   rescue:
 
     - name: Get full systemctl status output
