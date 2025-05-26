@@ -258,6 +258,7 @@ vagrant destroy -f && vagrant up --provision
 # To connect to VM
 vagrant ssh
 
+OPTION 2:
 # Instead of downloading the role from Github repo everytime you can sync folders between your local source and the VM
 config.vm.synced_folder "/Users/<username>/work/myansible/ansible-listmonk", "/root/.ansible/roles/idNoRD.listmonk", create: true, type: "rsync"
 # Once you change the code on your local machine we can auto-update the role in the VM immediately
@@ -329,9 +330,10 @@ sudo python3.12 -m venv /opt/ansible-for-listmonk/
 sudo /opt/ansible-for-listmonk/bin/pip install --upgrade pip
 sudo /opt/ansible-for-listmonk/bin/pip install ansible
 
-
-
-# HERE you can change the script to download the role from your custom branch
+# Please READ OPTION 1 and OPTION 2 carefully
+# HERE you can comment all "role install" commands if you are using OPTION 2 (Instead of downloading the role from Github repo everytime you can sync folders between your local source and the VM)
+# HERE you can change the script to download the role from your custom branch if you are using OPTION 1
+# If you don't change anything here this script will download published role from Ansible Galaxy which won't contain your custom changes
 /opt/ansible-for-listmonk/bin/ansible-galaxy role install idNoRD.listmonk --force
 # /opt/ansible-for-listmonk/bin/ansible-galaxy role install git+https://github.com/idNoRD/ansible-listmonk.git,feature/234_qwer_v26 --force
 
