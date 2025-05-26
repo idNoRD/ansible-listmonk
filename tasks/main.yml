@@ -60,13 +60,16 @@
       LISTMONK_ADMIN_PASSWORD: "{{ listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD }}"
       LISTMONK_ADMIN_API_USER: "{{ listmonk_bootstrap_LISTMONK_ADMIN_API_USER }}"
     register: listmonk_bootstrap_output
+    changed_when: true
     when: not listmonk_already_bootstrapped
-    no_log: "{{ not debug_mode | default(false) }}"
+    no_log: "{{ not (debug_mode | default(false)) }}"
 
   - name: Debug listmonk install output (dev only)
     debug:
       var: listmonk_bootstrap_output.stdout_lines
-    when: debug_mode | default(false)
+    when:
+      - not listmonk_already_bootstrapped
+      - debug_mode | default(false)
 
   - name: Find line containing API token
     set_fact:
@@ -80,7 +83,7 @@
     when:
       - not listmonk_already_bootstrapped
       - listmonk.override_settings
-    no_log: "{{ not debug_mode | default(false) }}"
+    no_log: "{{ not (debug_mode | default(false)) }}"
 
   - name: Extract API token from found line using split
     set_fact:
@@ -90,35 +93,24 @@
       - listmonk.override_settings
       - listmonk_api_token_line != ''
       - listmonk_api_token_line.count('"') >= 2
-    no_log: "{{ not debug_mode | default(false) }}"
+    no_log: "{{ not (debug_mode | default(false)) }}"
 
   - name: Check if Listmonk API token was extracted
     block:
-      - name: Fail if API token was not found in install output
         ansible.builtin.fail:
           msg: >
             ❌ Failed to extract API token from Listmonk install output.
             Make sure the --install created the API user and printed the token.
     when:
-      - not listmonk_already_bootstrapped
       - listmonk.override_settings
       - listmonk_api_token is not defined or listmonk_api_token == ""
-    no_log: "{{ not debug_mode | default(false) }}"
+    no_log: "{{ not (debug_mode | default(false)) }}"
 
   - name: Flush pending handlers
     ansible.builtin.meta: flush_handlers
 
-  - name: "Start and wait for listmonk service"
+  - name: "Start and wait for listmonk service with config before applying settings"
     ansible.builtin.include_tasks: start.yml
-
-  - name: Show curl equivalent for Listmonk settings API
-    debug:
-      msg: >
-        curl -X PUT "{{ listmonk.api_url }}/settings"
-        -H "Authorization: token {{ listmonk_bootstrap_LISTMONK_ADMIN_API_USER }}:{{ listmonk_api_token }}"
-        -H "Content-Type: application/json"
-        -d '{{ listmonk.api_settings_payload | to_json }}'
-    when: debug_mode | default(false)
 
   - name: Configure Listmonk settings via API
     uri:
@@ -133,11 +125,19 @@
     when:
       - listmonk.override_settings
       - listmonk_api_token is defined and listmonk_api_token | length > 0
-    no_log: "{{ not debug_mode | default(false) }}"
+    register: api_config_result
     notify:
       - restart listmonk
+    changed_when: api_config_result.json.data | default(false) | bool
+    no_log: "{{ not (debug_mode | default(false)) }}"
+
   - name: Flush pending handlers
     ansible.builtin.meta: flush_handlers
+    when:
+      - listmonk.override_settings
+
+  - name: "Start and wait for listmonk service after applying Settings"
+    ansible.builtin.include_tasks: start.yml
     when:
       - listmonk.override_settings
 
@@ -167,10 +167,9 @@
 
   - name: Ensure Listmonk service is running
     block:
-      - name: Fail if Listmonk service is not active
         ansible.builtin.fail:
           msg: |
-            ───── 🔴 The "{{ listmonk.service_name }}" service is NOT active ─────
+            ───── 🔴 The "{{ listmonk.service_name }}" service is NOT active and running ─────
             {{ listmonk_systemctl_output.stdout | default('No systemctl output available') | indent(6) }}
             ──────────────────────────────────────────────────────────────────────
     when: listmonk_service_status.status.ActiveState != "active"
