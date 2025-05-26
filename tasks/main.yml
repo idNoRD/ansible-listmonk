@@ -167,7 +167,7 @@
 
   - name: Ensure Listmonk service is running
     block:
-        ansible.builtin.fail:
+      - ansible.builtin.fail:
           msg: |
             ───── 🔴 The "{{ listmonk.service_name }}" service is NOT active and running ─────
             {{ listmonk_systemctl_output.stdout | default('No systemctl output available') | indent(6) }}
