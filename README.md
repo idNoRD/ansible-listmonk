@@ -1,7 +1,7 @@
 # Ansible Role: Listmonk
 
 Ansible role to install and configure [Listmonk](https://listmonk.app)  
-This role is primarily intended for Amazon Linux 2023, but it should also work on Fedora, RHEL distributions such as CentOS, Rocky Linux, and AlmaLinux, though testing on these platforms has not been done.
+This role is primarily intended for Amazon Linux 2023 (AL2023), but it should also work on Fedora, RHEL distributions such as CentOS, Rocky Linux, and AlmaLinux, though testing on these platforms has not been done.
 
 ---
 
