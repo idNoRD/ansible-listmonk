@@ -5,9 +5,7 @@ This role is primarily intended for Amazon Linux 2023 (AL2023), but it should al
 
 ---
 
-## 📍 ROADMAP: Development Plan
-
-### ✅ Completed
+## 📍 FEATURES
 - [x] Add RedHat os_family OS check
 - [x] Create dedicated system user/group (`listmonk:listmonk`)
 - [x] Download latest Listmonk release archive
@@ -23,10 +21,6 @@ This role is primarily intended for Amazon Linux 2023 (AL2023), but it should al
 - [x] Can override Settings using Listmonk API. Creates ADMIN_API_USER for that with a token.
 - [x] Developer guide
 - [x] Repository Funding is ready for your donate
-### 🛠️ In Progress / Planned
-- [ ] Optional: Set up NGINX as a reverse proxy (or expose option)
-- [ ] Add Molecule tests for role verification
-- [ ] Update documentation with usage examples and variable reference
 
 ---
 
