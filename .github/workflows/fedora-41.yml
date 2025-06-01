@@ -5,7 +5,6 @@ on: # yamllint disable-line rule:truthy
   push:
     branches:
       - main
-      - master
   pull_request:
     branches: []
 
@@ -21,5 +20,6 @@ jobs:
           --tmpfs /tmp --tmpfs /run --privileged --detach bviktor/ansible-systemd-fedora:41) &&
           podman exec ${CONT_ID} /bin/bash -c
           "if [ -f requirements.yml ]; then ansible-galaxy role install --force -r requirements.yml -p ..; fi &&
+          ./install-postgres-for-cicd.sh &&
           ANSIBLE_ROLES_PATH=.. ANSIBLE_FORCE_COLOR=true ansible-playbook tests/test-running-in-cicd.yml" &&
           podman stop ${CONT_ID}
