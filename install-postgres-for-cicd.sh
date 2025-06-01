@@ -2,7 +2,6 @@
 set -e
 
 DB_NAME="listmonkdb"
-#DB_PASS="S0meStr0ngP@ssword"
 
 dnf install -y postgresql-server
 postgresql-setup --initdb
@@ -16,7 +15,6 @@ sed -i -E \
 
 systemctl enable --now postgresql
 
-#createdb -U postgres $DB_NAME
-#psql -U postgres -c "ALTER USER postgres WITH PASSWORD '$DB_PASS';"
+createdb -U postgres $DB_NAME
 
 echo "✅ PostgreSQL installed and database '$DB_NAME' created with password auth."
