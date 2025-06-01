@@ -20,7 +20,6 @@ jobs:
           CONT_ID=$(podman run --rm -v ${{ github.workspace }}:/repo -v /sys/fs/cgroup:/sys/fs/cgroup:ro
           --tmpfs /tmp --tmpfs /run --privileged --detach bviktor/ansible-systemd-fedora:41) &&
           podman exec ${CONT_ID} /bin/bash -c
-          "./install.sh --extra-vars 'skip_kfgame=true' <<< y &&
-          ./uninstall.sh <<< y &&
-          ./install.sh --extra-vars 'skip_kfgame=true kf2_classic=true' <<< y" &&
+          "if [ -f requirements.yml ]; then ansible-galaxy role install --force -r requirements.yml -p ..; fi &&
+          ANSIBLE_ROLES_PATH=.. ANSIBLE_FORCE_COLOR=true ansible-playbook tests/test-running-in-cicd.yml" &&
           podman stop ${CONT_ID}

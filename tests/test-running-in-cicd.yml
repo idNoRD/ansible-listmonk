@@ -1,0 +1,14 @@
+---
+- hosts: 127.0.0.1
+  tasks:
+    - include_role:
+        name: "{{ playbook_dir.split('/')[:-1] | last }}"
+      vars:
+        listmonk_version: "v5.0.0"
+        listmonk_archive: "listmonk_5.0.0_linux_amd64.tar.gz"
+        listmonk_bootstrap_LISTMONK_ADMIN_USER: "listmonk"
+        listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD: "changeAdminPassword"
+        listmonk_config_db_host: "localhost"
+        listmonk_config_db_database: "listmonk"
+        listmonk_config_db_user: "listmonk"
+        listmonk_config_db_password: "changeDbPassword"
