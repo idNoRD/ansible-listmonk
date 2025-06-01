@@ -3,7 +3,7 @@ set -e
 
 DB_NAME="listmonkdb"
 
-dnf install -y postgresql-server
+dnf install -y postgresql-server postgresql-contrib
 postgresql-setup --initdb
 
 PG_HBA="/var/lib/pgsql/data/pg_hba.conf"
