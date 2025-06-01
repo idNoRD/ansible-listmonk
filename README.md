@@ -1,3 +1,4 @@
+[![Fedora 41](https://github.com/idNoRD/ansible-listmonk/actions/workflows/fedora-41.yml/badge.svg)](https://github.com/idNoRD/ansible-listmonk/actions/workflows/fedora-41.yml)
 # Ansible Role: Listmonk
 
 Ansible role to install and configure [Listmonk](https://listmonk.app)  
