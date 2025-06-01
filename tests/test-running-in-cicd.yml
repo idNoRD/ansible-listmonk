@@ -11,5 +11,5 @@
         listmonk_config_db_host: "localhost"
         listmonk_config_db_database: "listmonkdb"
         listmonk_config_db_user: "postgres"
-        listmonk_config_db_password: "at_least_8_characters"
+        listmonk_config_db_password: "S0meStr0ngP@ssword"
         debug_mode: true
