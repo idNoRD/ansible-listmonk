@@ -33,4 +33,3 @@
   loop:
     - "{{ listmonk_https_port }}/tcp"
   when: not listmonk_http_enabled | bool
-
