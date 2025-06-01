@@ -20,7 +20,7 @@ sed -i -E \
 systemctl enable --now postgresql
 
 # Create database and set password for postgres user
-su - postgres -c "createdb $DB_NAME"
-su - postgres -c "psql -c \"ALTER USER postgres WITH PASSWORD '$DB_PASS';\""
+runuser -u postgres -- createdb $DB_NAME
+runuser -u postgres -- psql -c "ALTER USER postgres WITH PASSWORD '$DB_PASS';"
 
 echo "✅ PostgreSQL installed and database '$DB_NAME' created."
