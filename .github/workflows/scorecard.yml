@@ -1,3 +1,4 @@
+---
 # This workflow uses actions that are not certified by GitHub. They are provided
 # by a third-party and are governed by separate terms of service, privacy
 # policy, and support documentation.
@@ -12,7 +13,8 @@ on:
   schedule:
     - cron: '27 23 * * 3'
   push:
-    branches: [ "main" ]
+    branches:
+      - "main"
 
 # Declare default permissions as read only.
 permissions: read-all
