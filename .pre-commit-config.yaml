@@ -1,0 +1,13 @@
+---
+repos:
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.30.0  # Use a stable version
+    hooks:
+      - id: yamllint
+        args: [--strict]
+
+  - repo: https://github.com/ansible/ansible-lint.git
+    rev: v6.19.0  # Use the desired version
+    hooks:
+      - id: ansible-lint
+        args: [--offline, --strict]

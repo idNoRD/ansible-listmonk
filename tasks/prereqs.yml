@@ -60,19 +60,19 @@
 - name: Validate admin console user name
   ansible.builtin.assert:
     that:
-      - listmonk_bootstrap_LISTMONK_ADMIN_USER is defined
-      - listmonk_bootstrap_LISTMONK_ADMIN_USER | length > 3
+      - listmonk_bootstrap_admin_user is defined
+      - listmonk_bootstrap_admin_user | length > 3
     quiet: true
-    fail_msg: "The console administrator username is empty or invalid. Please set the listmonk_bootstrap_LISTMONK_ADMIN_USER to a 4+ char long string"
+    fail_msg: "The console administrator username is empty or invalid. Please set the listmonk_bootstrap_admin_user to a 4+ char long string"
     success_msg: "Console administrator username OK"
 
 - name: Validate admin console password
   ansible.builtin.assert:
     that:
-      - listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD is defined
-      - listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD | length > 7
+      - listmonk_bootstrap_admin_password is defined
+      - listmonk_bootstrap_admin_password | length > 7
     quiet: true
-    fail_msg: "The console administrator password is empty or invalid. Please set the listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD to an 8+ char long string"
+    fail_msg: "The console administrator password is empty or invalid. Please set the listmonk_bootstrap_admin_password to an 8+ char long string"
     success_msg: "Console administrator password OK"
 
 - name: Validate db password
@@ -87,21 +87,21 @@
 - name: Validate the name for Admin API User
   ansible.builtin.assert:
     that:
-      - listmonk_bootstrap_LISTMONK_ADMIN_API_USER is defined
-      - listmonk_bootstrap_LISTMONK_ADMIN_API_USER | length > 3
+      - listmonk_bootstrap_admin_api_user is defined
+      - listmonk_bootstrap_admin_api_user | length > 3
     quiet: true
-    fail_msg: "The LISTMONK_ADMIN_API_USER is empty or invalid. Please set the listmonk_bootstrap_LISTMONK_ADMIN_API_USER to a 4+ char long string"
+    fail_msg: "The admin_api_user is empty or invalid. Please set the listmonk_bootstrap_admin_api_user to a 4+ char long string"
     success_msg: "Admin API User name OK"
 
 - name: Validate that all sensitive strings are not the same
   ansible.builtin.assert:
     that:
-      - listmonk_bootstrap_LISTMONK_ADMIN_USER != listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD
-      - listmonk_bootstrap_LISTMONK_ADMIN_USER != listmonk_config_db_password
-      - listmonk_bootstrap_LISTMONK_ADMIN_USER != listmonk_bootstrap_LISTMONK_ADMIN_API_USER
-      - listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD != listmonk_config_db_password
-      - listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD != listmonk_bootstrap_LISTMONK_ADMIN_API_USER
-      - listmonk_config_db_password != listmonk_bootstrap_LISTMONK_ADMIN_API_USER
+      - listmonk_bootstrap_admin_user != listmonk_bootstrap_admin_password
+      - listmonk_bootstrap_admin_user != listmonk_config_db_password
+      - listmonk_bootstrap_admin_user != listmonk_bootstrap_admin_api_user
+      - listmonk_bootstrap_admin_password != listmonk_config_db_password
+      - listmonk_bootstrap_admin_password != listmonk_bootstrap_admin_api_user
+      - listmonk_config_db_password != listmonk_bootstrap_admin_api_user
     fail_msg: >
       Sensitive values for usernames and passwords must be unique.
       Please ensure admin user, admin password, db password,

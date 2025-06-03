@@ -32,9 +32,9 @@ listmonk_configure_firewalld: false
 ### administrator console password
 # Admin credentials are not stored in the Listmonk config file.
 # They are provided as environment variables only during the initial bootstrap (one-time install).
-listmonk_bootstrap_LISTMONK_ADMIN_USER: listmonk
-listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD: changeit
-listmonk_bootstrap_LISTMONK_ADMIN_API_USER: ansibleApiUser
+listmonk_bootstrap_admin_user: listmonk
+listmonk_bootstrap_admin_password: changeit
+listmonk_bootstrap_admin_api_user: ansibleApiUser
 listmonk_bootstrap_install_args: "--idempotent"
 ### Configuration settings
 listmonk_http_enabled: true

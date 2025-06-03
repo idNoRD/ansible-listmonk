@@ -56,9 +56,9 @@
   shell: >
     {{ listmonk.home }}/bin/listmonk --config {{ listmonk.config_dir }}/config.toml --install {{ listmonk_bootstrap_install_args }} --yes 2>&1
   environment:
-    LISTMONK_ADMIN_USER: "{{ listmonk_bootstrap_LISTMONK_ADMIN_USER }}"
-    LISTMONK_ADMIN_PASSWORD: "{{ listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD }}"
-    LISTMONK_ADMIN_API_USER: "{{ listmonk_bootstrap_LISTMONK_ADMIN_API_USER }}"
+    admin_user: "{{ listmonk_bootstrap_admin_user }}"
+    admin_password: "{{ listmonk_bootstrap_admin_password }}"
+    admin_api_user: "{{ listmonk_bootstrap_admin_api_user }}"
   register: listmonk_bootstrap_output
   changed_when: true
   when: not listmonk_already_bootstrapped
@@ -124,7 +124,7 @@
     url: "{{ listmonk.api_url }}/settings"
     method: PUT
     headers:
-      Authorization: "token {{ listmonk_bootstrap_LISTMONK_ADMIN_API_USER }}:{{ listmonk_api_token }}"
+      Authorization: "token {{ listmonk_bootstrap_admin_api_user }}:{{ listmonk_api_token }}"
       Content-Type: "application/json"
     body_format: raw
     body: "{{ listmonk.api_settings_payload | to_json }}"

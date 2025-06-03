@@ -6,6 +6,7 @@
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/idNoRD/ansible-listmonk/badge)](https://scorecard.dev/viewer/?uri=github.com/idNoRD/ansible-listmonk)
 ![Dependabot](https://badgen.net/github/dependabot/idNoRD/ansible-listmonk)
 [![Lint](https://github.com/idNoRD/ansible-listmonk/actions/workflows/lint.yml/badge.svg)](https://github.com/idNoRD/ansible-listmonk/actions/workflows/lint.yml)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 
 Ansible role to install and configure [Listmonk](https://listmonk.app)  
 This role is primarily intended for Amazon Linux 2023 (AL2023), but it should also work on Fedora, RHEL distributions such as CentOS, Rocky Linux, and AlmaLinux, though testing on these platforms has not been done.
@@ -45,8 +46,8 @@ The following are a set of key variables used by the role:
 |----------------------------------------------|------------------------------------------------------------------------------|------------------------|
 | `listmonk_version`                           | Listmonk version (from [GitHub Releases](https://github.com/knadh/listmonk/releases)) | `v5.0.0`               |
 | `listmonk_archive`                           | Listmonk archive (from [GitHub Releases](https://github.com/knadh/listmonk/releases)) | `listmonk_5.0.0_linux_amd64.tar.gz` |
-| `listmonk_bootstrap_LISTMONK_ADMIN_USER`     | Username for the Listmonk admin user                                         | `listmonk`             |
-| `listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD` | Password for the Listmonk admin user 8+ chars                                | `changeit`             |
+| `listmonk_bootstrap_admin_user`     | Username for the Listmonk admin user                                         | `listmonk`             |
+| `listmonk_bootstrap_admin_password` | Password for the Listmonk admin user 8+ chars                                | `changeit`             |
 | `listmonk_config_db_password`                | Password for the PostgreSQL database                                         | `listmonk`             |
 
 > Other configuration variables can be found in [`defaults/main.yml`](defaults/main.yml).
@@ -76,8 +77,8 @@ ansible-galaxy role install idNoRD.listmonk
   vars:
     listmonk_version: "v5.0.0"
     listmonk_archive: "listmonk_5.0.0_linux_amd64.tar.gz"
-    listmonk_bootstrap_LISTMONK_ADMIN_USER: "listmonk"
-    listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD: "changeAdminPassword"
+    listmonk_bootstrap_admin_user: "listmonk"
+    listmonk_bootstrap_admin_password: "changeAdminPassword"
     listmonk_config_db_host: "localhost"
     listmonk_config_db_database: "listmonk"
     listmonk_config_db_user: "listmonk"
@@ -92,8 +93,8 @@ ansible-galaxy role install idNoRD.listmonk
   vars:
     listmonk_version: "v5.0.0"
     listmonk_archive: "listmonk_5.0.0_linux_amd64.tar.gz"
-    listmonk_bootstrap_LISTMONK_ADMIN_USER: "listmonk"
-    listmonk_bootstrap_LISTMONK_ADMIN_PASSWORD: "changeAdminPassword"
+    listmonk_bootstrap_admin_user: "listmonk"
+    listmonk_bootstrap_admin_password: "changeAdminPassword"
     listmonk_config_db_host: "localhost"
     listmonk_config_db_database: "listmonk"
     listmonk_config_db_user: "listmonk"
