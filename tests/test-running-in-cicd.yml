@@ -12,4 +12,4 @@
         listmonk_config_db_database: "listmonkdb"
         listmonk_config_db_user: "postgres"
         listmonk_config_db_password: "S0meStr0ngP@ssword"
-        debug_mode: true
+        debug_mode: false

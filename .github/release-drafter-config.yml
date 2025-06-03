@@ -1,0 +1,129 @@
+---
+name-template: "$RESOLVED_VERSION"
+tag-template: "$RESOLVED_VERSION"
+prerelease: true
+include-pre-releases: true
+categories:
+  - title: 💣 Breaking Changes
+    labels:
+      - breaking change
+  - title: 🔔 Deprecation Warnings
+    labels:
+      - deprecation
+  - title: 🚀 Features
+    labels:
+      - enhancement
+  - title: 🐛 Bug Fixes
+    labels:
+      - bug
+  - title: 🧪 Tests
+    labels:
+      - tests
+  - title: 🔨 Maintenance
+    labels:
+      - chore
+  - title: 👷 CI/CD
+    labels:
+      - ci
+  - title: ⬆️ Dependencies
+    collapse-after: 15
+    labels:
+      - dependencies
+  - title: 📝 Documentation
+    labels:
+      - documentation
+  - title: Other Changes
+    labels:
+      - "*"
+exclude-labels:
+  - skip changelog
+version-resolver:
+  minor:
+    labels:
+      - breaking change
+      - deprecation
+  patch:
+    labels:
+      - bug
+      - ci
+      - chore
+      - dependencies
+      - documentation
+      - enhancement
+      - tests
+  default: patch
+autolabeler:
+  - label: breaking change
+    body:
+      - "/breaking/i"
+    title:
+      - "/breaking/i"
+      - "/^\\w+!/i"
+  - label: deprecation
+    branch:
+      - "/deprecate\/.+/"
+    title:
+      - "/deprecate/i"
+  - label: enhancement
+    branch:
+      - "/feat\/.+/"
+      - "/feature\/.+/"
+    title:
+      - "/feat/i"
+      - "/feature/i"
+  - label: bug
+    branch:
+      - "/fix\/.+/"
+      - "/bug\/.+/"
+      - "/bugfix\/.+/"
+    title:
+      - "/fix/i"
+      - "/bug/i"
+      - "/bugfix/i"
+  - label: tests
+    branch:
+      - "/tests{0,1}\/.+/"
+    files:
+      - "/tests/**"
+    title:
+      - "/tests{0,1}\/.+/i"
+  - label: documentation
+    branch:
+      - "/docs{0,1}\/.+/"
+      - "/documentation\/.+/"
+    files:
+      - "docs/**"
+    title:
+      - "/docs{0,1}\/.+/i"
+      - "/documentation/i"
+  - label: ci
+    branch:
+      - "/ci\/.+/"
+    title:
+      - "/ci/i"
+  - label: chore
+    branch:
+      - "/chore\/.+/"
+      - "/refactor\/.+/"
+      - "/style\/.+/"
+    title:
+      - "/chore/i"
+      - "/refactor/i"
+      - "/style/i"
+replacers:
+  - search: "/(\\w+)(\\(\\w+\\))?!?: /g"
+    replace: ""
+template: |
+  ## What's new in Listmonk's Ansible role $RESOLVED_VERSION!
+
+  $CHANGES
+
+  ## Install & Upgrade
+
+  - To install the Ansible Listmonk role on a fresh environment, run `ansible-galaxy install idNoRD.listmonk`.
+  - To upgrade the Ansible Listmonk role to the latest release, run `ansible-galaxy install -f idNoRD.listmonk`.
+  - To install or upgrade to this specific Ansible Listmonk role release ($RESOLVED_VERSION), run `ansible-galaxy install -f idNoRD.listmonk,v$RESOLVED_VERSION`.
+
+  ## Resources
+
+  - Ansible Galaxy repository -- [galaxy.ansible.com/idNoRD.listmonk](https://galaxy.ansible.com/idNoRD.listmonk).
