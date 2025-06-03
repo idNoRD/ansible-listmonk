@@ -43,6 +43,8 @@ jobs:
             echo "No draft release found." && exit 0
           fi
           gh release view "$RELEASE" --json body -q .body > DRAFT_CHANGELOG.md
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Prepend draft to changelog
         run: |
