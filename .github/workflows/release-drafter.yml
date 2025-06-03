@@ -1,11 +1,8 @@
 ---
 name: Release Drafter
-
 on:
   push:
     branches: [main]
-
-  # pull_request event is required only for autolabeler
   pull_request_target:
     types: [opened, reopened, synchronize]
   workflow_dispatch:
@@ -13,51 +10,14 @@ permissions: read-all
 jobs:
   update-release-draft:
     name: Update release draft
+    runs-on: ubuntu-24.04
     permissions:
-      # write permission is required to create a github release
       contents: write
-      # write permission is required for autolabeler
-      # otherwise, read permission is required at least
       pull-requests: write
-    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Run Release Drafter
-        uses: release-drafter/release-drafter@v6
+        uses: release-drafter/release-drafter@b1476f6e6eb133afa41ed8589daba6dc69b4d3f5 # v6.1.0
         with:
-          config-name: release-drafter-config.yml
           disable-autolabeler: ${{ github.actor == 'renovate[bot]' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Install GitHub CLI
-        run: sudo apt-get install gh -y
-
-      - name: Fetch latest draft release notes
-        id: fetch_release
-        run: |
-          RELEASE=$(gh release list --limit 1 --json isDraft,name -q '.[] | select(.isDraft == true) | .name')
-          if [ -z "$RELEASE" ]; then
-            echo "No draft release found." && exit 0
-          fi
-          gh release view "$RELEASE" --json body -q .body > DRAFT_CHANGELOG.md
-        env:
-          GH_TOKEN: ${{ github.token }}
-
-      - name: Prepend draft to changelog
-        run: |
-          echo -e "\n## Draft Release Notes\n" > new_changelog.md
-          cat DRAFT_CHANGELOG.md >> new_changelog.md
-          if [ -f CHANGELOG.md ]; then
-            cat CHANGELOG.md >> new_changelog.md
-          fi
-          mv new_changelog.md CHANGELOG.md
-
-      # Optional: Commit the draft changelog
-      - name: Commit draft changelog
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: "docs: Add draft changelog from Release Drafter"
-          file_pattern: CHANGELOG.md
