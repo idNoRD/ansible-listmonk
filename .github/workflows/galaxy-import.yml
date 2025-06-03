@@ -1,0 +1,25 @@
+---
+name: Ansible Galaxy Role Import
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+permissions: read-all
+jobs:
+  ansible-galaxy:
+    name: Import role to Ansible Galaxy
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out the codebase
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python 3
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: 3.x
+
+      - name: Install Ansible core
+        run: pip3 install -r .github/workflows/requirements/requirements_ansible.txt
+
+      - name: Import role releases to Ansible Galaxy
+        run: ansible-galaxy role import --api-key ${{ secrets.GALAXY_API_KEY }} $(echo ${{ github.repository }} | cut -d/ -f1) $(echo ${{ github.repository }} | cut -d/ -f2)

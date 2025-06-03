@@ -24,8 +24,7 @@ galaxy_info:
   platforms:
     - name: Fedora
       versions:
-        - "37"
-        - "38"
+        - "41"
 
 
   # If this a Container Enabled role, provide the minimum Ansible Container version.

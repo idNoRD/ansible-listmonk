@@ -21,11 +21,41 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Run Release Drafter
-        # Drafts your next Release notes as Pull Requests are merged into "main"
         uses: release-drafter/release-drafter@v6
         with:
           config-name: release-drafter-config.yml
           disable-autolabeler: ${{ github.actor == 'renovate[bot]' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install GitHub CLI
+        run: sudo apt-get install gh -y
+
+      - name: Fetch latest draft release notes
+        id: fetch_release
+        run: |
+          RELEASE=$(gh release list --limit 1 --json isDraft,name -q '.[] | select(.isDraft == true) | .name')
+          if [ -z "$RELEASE" ]; then
+            echo "No draft release found." && exit 0
+          fi
+          gh release view "$RELEASE" --json body -q .body > DRAFT_CHANGELOG.md
+
+      - name: Prepend draft to changelog
+        run: |
+          echo -e "\n## Draft Release Notes\n" > new_changelog.md
+          cat DRAFT_CHANGELOG.md >> new_changelog.md
+          if [ -f CHANGELOG.md ]; then
+            cat CHANGELOG.md >> new_changelog.md
+          fi
+          mv new_changelog.md CHANGELOG.md
+
+      # Optional: Commit the draft changelog
+      - name: Commit draft changelog
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "docs: Add draft changelog from Release Drafter"
+          file_pattern: CHANGELOG.md
