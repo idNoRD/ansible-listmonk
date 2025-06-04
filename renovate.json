@@ -10,7 +10,7 @@
   "prConcurrentLimit": 0,
   "prHourlyLimit": 3,
   "schedule": [
-    "0 2 * * 1"
+    "* 0-7 * * 1"
   ],
   "packageRules": [
     {
