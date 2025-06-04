@@ -4,9 +4,9 @@
 ![GitHub Maintained](https://img.shields.io/maintenance/yes/2025)
 ![GitHub License](https://img.shields.io/github/license/ironwolphern/ansible-role-certbot)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/idNoRD/ansible-listmonk/badge)](https://scorecard.dev/viewer/?uri=github.com/idNoRD/ansible-listmonk)
-![Dependabot](https://badgen.net/github/dependabot/idNoRD/ansible-listmonk)
 [![Lint](https://github.com/idNoRD/ansible-listmonk/actions/workflows/lint.yml/badge.svg)](https://github.com/idNoRD/ansible-listmonk/actions/workflows/lint.yml)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-blue?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![RenovateBot](https://img.shields.io/badge/dependencies-renovate[bot]-blue.svg?logo=renovatebot&logoColor=white)](https://developer.mend.io/github/idNoRD/ansible-listmonk)
 
 Ansible role to install and configure [Listmonk](https://listmonk.app)  
 This role is primarily intended for Amazon Linux 2023 (AL2023), but it should also work on Fedora, RHEL distributions such as CentOS, Rocky Linux, and AlmaLinux, though testing on these platforms has not been done.
