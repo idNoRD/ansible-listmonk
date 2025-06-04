@@ -122,5 +122,6 @@
         "matchCurrentVersion": "!/^0/"
       }
     ]
-  }
+  },
+  "dependencyDashboard": false
 }
