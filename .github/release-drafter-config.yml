@@ -21,7 +21,7 @@ categories:
       - tests
   - title: 🔨 Maintenance
     labels:
-      - chore
+      - maintenance
   - title: 👷 CI/CD
     labels:
       - ci
@@ -44,75 +44,45 @@ version-resolver:
       - deprecation
   patch:
     labels:
-      - bug
-      - ci
-      - chore
-      - dependencies
-      - documentation
       - enhancement
+      - bug
       - tests
+      - documentation
+      - ci
+      - maintenance
+      - dependencies
   default: patch
 autolabeler:
   - label: breaking change
     body:
       - "/breaking/i"
-    title:
-      - "/breaking/i"
-      - "/^\\w+!/i"
   - label: deprecation
-    branch:
-      - "/deprecate\/.+/"
-    title:
+    body:
       - "/deprecate/i"
   - label: enhancement
-    branch:
-      - "/feat\/.+/"
-      - "/feature\/.+/"
     title:
-      - "/feat/i"
-      - "/feature/i"
+      - "/^[^:]*(feat|feature|perf)(\\([^)]*\\))?:/i"
   - label: bug
-    branch:
-      - "/fix\/.+/"
-      - "/bug\/.+/"
-      - "/bugfix\/.+/"
     title:
-      - "/fix/i"
-      - "/bug/i"
-      - "/bugfix/i"
+      - "/^[^:]*(bug)(\\([^)]*\\))?:/i"
   - label: tests
-    branch:
-      - "/tests{0,1}\/.+/"
-    files:
-      - "/tests/**"
     title:
-      - "/tests{0,1}\/.+/i"
+      - "/^[^:]*(test|tests)(\\([^)]*\\))?:/i"
   - label: documentation
-    branch:
-      - "/docs{0,1}\/.+/"
-      - "/documentation\/.+/"
-    files:
-      - "docs/**"
     title:
-      - "/docs{0,1}\/.+/i"
-      - "/documentation/i"
+      - "/^[^:]*(docs|documentation)(\\([^)]*\\))?:/i"
   - label: ci
-    branch:
-      - "/ci\/.+/"
     title:
-      - "/ci/i"
-  - label: chore
-    branch:
-      - "/chore\/.+/"
-      - "/refactor\/.+/"
-      - "/style\/.+/"
+      - "/^[^:]*(ci|build)(\\([^)]*\\))?:/i"
+  - label: maintenance
     title:
-      - "/chore/i"
-      - "/refactor/i"
-      - "/style/i"
-replacers:
-  - search: "/(\\w+)(\\(\\w+\\))?!?: /g"
-    replace: ""
+      - "/^[^:]*(chore|refactor|style|revert)(\\([^)]*\\))?:/i"
+  - label: dependencies
+    title:
+      - "/.+\\sto\\sv.+"
+#replacers:
+#  - search: "/[^:]*(\\w+)(\\(\\w+\\))?!?: /g"
+#    replace: ""
 template: |
   ## What's new in Listmonk's Ansible role $RESOLVED_VERSION!
 
