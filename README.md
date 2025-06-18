@@ -8,7 +8,7 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-blue?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![RenovateBot](https://img.shields.io/badge/dependencies-renovate[bot]-blue.svg?logo=renovatebot&logoColor=white)](https://developer.mend.io/github/idNoRD/ansible-listmonk)
 
-Ansible role to install and configure [Listmonk](https://listmonk.app)  
+Ansible role to install and configure unmodified [Listmonk](https://listmonk.app) v5.0.0 from its GitHub releases  
 This role is primarily intended for Amazon Linux 2023 (AL2023), but it should also work on Fedora, RHEL distributions such as CentOS, Rocky Linux, and AlmaLinux, though testing on these platforms has not been done.
 
 ---
