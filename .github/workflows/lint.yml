@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Obtain sources
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Lint sources
         run: >
           podman run --rm -v ${{ github.workspace }}:/repo bviktor/ansible-systemd-lint:latest /bin/bash -c
