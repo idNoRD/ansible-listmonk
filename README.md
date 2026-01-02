@@ -1,7 +1,7 @@
 # Ansible Role: Listmonk
 [![Ansible Galaxy](https://img.shields.io/github/v/tag/idNoRD/ansible-listmonk?label=Ansible%20Galaxy&logo=ansible&logoColor=white&labelColor=000000)](https://galaxy.ansible.com/idNoRD/listmonk)
 [![Fedora 41](https://img.shields.io/github/actions/workflow/status/idNoRD/ansible-listmonk/fedora-41.yml?label=Fedora%2041&logo=fedora&logoColor=white&style=flat)](https://github.com/idNoRD/ansible-listmonk/actions/workflows/fedora-41.yml)
-![GitHub Maintained](https://img.shields.io/maintenance/yes/2025)
+![GitHub Maintained](https://img.shields.io/maintenance/yes/2026)
 ![GitHub License](https://img.shields.io/github/license/idNoRD/ansible-listmonk)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/idNoRD/ansible-listmonk/badge)](https://scorecard.dev/viewer/?uri=github.com/idNoRD/ansible-listmonk)
 [![Lint](https://github.com/idNoRD/ansible-listmonk/actions/workflows/lint.yml/badge.svg)](https://github.com/idNoRD/ansible-listmonk/actions/workflows/lint.yml)
